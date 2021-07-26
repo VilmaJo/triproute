@@ -6,7 +6,7 @@ export default function Welcome() {
     return (
         <HashRouter>
             <div className="welcome">
-                <h1 className="mainHeading">Amazing Trip Routes</h1>
+                <h1 className="mainHeading">Amazing Trips to Remember</h1>
                 <img src="./assets/map.png" alt="Globe Image"></img>
 
                 <Route path="/" exact>

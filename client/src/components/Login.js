@@ -3,7 +3,7 @@ import axios from "../axios";
 
 export default function Login() {
     const [formData, setFormData] = useState({});
-    const [error, setError] = useState([]);
+    const [errorMessage, setErrorMessage] = useState([]);
 
     function onChange(event) {
         setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -12,7 +12,7 @@ export default function Login() {
     function onFormSubmit(event) {
         event.preventDefault();
         console.log("onFormSubmit", formData);
-        console.log("onFormSubmit error", error);
+        console.log("onFormSubmit error", errorMessage);
         axios
             .post("/api/login", formData)
             .then(() => {
@@ -20,7 +20,7 @@ export default function Login() {
             })
             .catch((error) => {
                 console.log("[login.js: error.response.data]", error);
-                setError({ error: error.message });
+                setErrorMessage(error);
             });
     }
 
@@ -44,7 +44,7 @@ export default function Login() {
                 ></input>
                 <button type="submit">Login</button>
             </form>
-            {error && <p>{error}</p>}
+            {errorMessage && <p>{errorMessage}</p>}
         </div>
     );
 }

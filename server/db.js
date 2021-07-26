@@ -6,14 +6,14 @@ const { username, password } =
     require("../secrets").SESSION_SECRET ||
     require("../secrets.json");
 
-const databaseName = "socialnetwork";
+const databaseName = "triproutes";
 
 const db = spicedPg(
     process.env.DATABASE_URL ||
         `postgres:${username}:${password}@localhost:5432/${databaseName}`
 );
 
-function createUsers({
+function createUser({
     firstName,
     lastName,
     profile_url,
@@ -45,11 +45,23 @@ function createUsers({
             )
             .then((result) => {
                 console.log("db.js createUsers", result.rows[0]);
-                return result.rows;
+                return result.rows[0];
             });
     });
 }
 
+function getUserByEmail(email) {
+    return db
+        .query("SELECT * FROM users WHERE email = $1", [email])
+        .then((foundUser) => {
+            if (!foundUser) {
+                return;
+            }
+            return foundUser.rows[0];
+        });
+}
+
 module.exports = {
-    createUsers,
+    createUser,
+    getUserByEmail,
 };

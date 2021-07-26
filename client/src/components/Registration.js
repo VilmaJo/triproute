@@ -3,18 +3,18 @@ import axios from "../axios";
 
 export default function Registration() {
     const [formData, setFormData] = useState({});
-    const [error, setError] = useState([]);
+    const [errorMessage, setErrorMessage] = useState();
 
     function onFormSubmit(event) {
         event.preventDefault();
         axios
             .post("/api/registration", formData)
             .then(() => {
-                window.location.replace("/login");
+                window.location.replace("/");
             })
             .catch((error) => {
                 console.log("[registrations.js: error.response.data]", error);
-                setError({ error: error.message });
+                setErrorMessage(error.message);
             });
     }
 
@@ -56,7 +56,7 @@ export default function Registration() {
                 ></input>
                 <button type="submit">Register</button>
             </form>
-            {error && <p>{error}</p>}
+            {errorMessage && <p>{errorMessage}</p>}
         </div>
     );
 }

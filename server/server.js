@@ -16,7 +16,8 @@ const csurf = require("csurf");
 //for resetting password
 const cryptoRandomString = require("crypto-random-string");
 
-const { createUsers } = require("./db");
+const { createUser, getUserByEmail } = require("./db");
+const { login } = require("./login");
 
 app.use(compression());
 app.use(express.json());
@@ -39,19 +40,44 @@ app.use((request, response, next) => {
 
 app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
+app.get("/api/user/id.json", (request, response) => {
+    response.json({ userId: request.session.userId });
+});
+
+app.post("/api/login", (request, response) => {
+    const { email, password } = request.body;
+    login(email, password)
+        .then((foundUser) => {
+            if (!foundUser) {
+                console.log("NO FOUND USER");
+                return;
+            }
+            getUserByEmail(request.body.email).then((user) => {
+                request.session.userId = user.id;
+                response.json(user);
+                return;
+            });
+        })
+        .catch((error) => {
+            response.status(400);
+            response.json(error);
+        });
+});
+
 app.post("/api/registration", (request, response) => {
     const profile_url = "/assets/defaultImage.jpg";
     const { firstName, lastName, email, password } = request.body;
     console.log("server request.body", request.body);
+    console.log("server request.session", request.session);
 
-    createUsers({ firstName, lastName, profile_url, email, password })
+    createUser({ firstName, lastName, profile_url, email, password })
         .then((user) => {
             console.log("server, user", user);
             request.session.userId = user.id;
             response.json(user);
         })
         .catch((error) => {
-            console.log("createUserErrr"), error;
+            console.log("createUserErrr", error);
             response.status(400);
             response.json(error);
         });
