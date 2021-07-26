@@ -1,0 +1,9 @@
+node_modules
+.DS_Store
+secrets2.json
+client/public/bundle.js
+client/public/bundle.js.LICENSE.txt
+bundle.css
+secrets.json
+aws.json
+znotes.txt

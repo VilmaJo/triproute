@@ -1,0 +1,91 @@
+html {
+    background-color: white;
+    font-family: "Lucida Console", "Courier New", monospace;
+    height: 100%;
+    color: rgb(74, 74, 74);
+}
+
+body {
+    width: 75%;
+    height: 100%;
+    margin: auto;
+    background-color: rgb(185, 212, 218);
+    display: flex;
+    justify-content: center;
+    padding: 0;
+}
+
+main {
+    /* overflow: hidden; */
+    background-color: white;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 20px;
+}
+.mainHeading {
+    font-size: 40px;
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid rgb(74, 74, 74);
+}
+
+a {
+    text-decoration: none;
+    color: rgb(74, 74, 74);
+    font-size: 20px;
+}
+
+a:hover {
+    text-decoration: underline;
+    font-weight: bold;
+}
+.welcome {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.welcome h3 {
+    text-align: center;
+}
+
+.tripForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tripForm input {
+    margin: 5px;
+    padding: 5px;
+    border: none;
+    background-color: rgb(185, 212, 218);
+}
+
+.tripForm input:focus {
+    outline: 1px solid rgba(216, 54, 54, 0.274);
+}
+
+button {
+    color: rgb(74, 74, 74);
+    height: 45px;
+    min-width: 100px;
+    max-width: 300px;
+    max-height: 30px;
+    font-size: 18px;
+    background-color: white;
+    border: 2px solid rgba(216, 54, 54, 0.274);
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 15px;
+}
+
+button:hover {
+    border: 3px solid rgba(216, 54, 54, 0.274);
+}
+
+footer {
+    display: flex;
+}
