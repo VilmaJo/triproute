@@ -40,8 +40,8 @@ app.use((request, response, next) => {
 
 app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
-app.get("/api/user/id.json", (request, response) => {
-    response.json({ userId: request.session.userId });
+app.get("/api/user/id", (request, response) => {
+    response.json({ user: request.session.user });
 });
 
 app.post("/api/login", (request, response) => {
@@ -53,7 +53,7 @@ app.post("/api/login", (request, response) => {
                 return;
             }
             getUserByEmail(request.body.email).then((user) => {
-                request.session.userId = user.id;
+                request.session.user = user;
                 response.json(user);
                 return;
             });
@@ -62,6 +62,11 @@ app.post("/api/login", (request, response) => {
             response.status(400);
             response.json(error);
         });
+});
+
+app.post("/api/logout", (request, response) => {
+    request.session.user = null;
+    response.json({ message: "Logged out!" });
 });
 
 app.post("/api/registration", (request, response) => {

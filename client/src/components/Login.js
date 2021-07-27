@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "../axios";
 
 export default function Login() {
@@ -16,7 +17,7 @@ export default function Login() {
         axios
             .post("/api/login", formData)
             .then(() => {
-                window.location.replace("/");
+                window.location.replace("/map");
             })
             .catch((error) => {
                 console.log("[login.js: error.response.data]", error);
@@ -44,6 +45,9 @@ export default function Login() {
                 ></input>
                 <button type="submit">Login</button>
             </form>
+            <p>
+                <Link to="/registration">Go to registration</Link>
+            </p>
             {errorMessage && <p>{errorMessage}</p>}
         </div>
     );

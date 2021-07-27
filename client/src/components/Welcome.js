@@ -1,30 +1,34 @@
-import { HashRouter, Route, Link } from "react-router-dom";
+import { HashRouter, BrowserRouter, Route, Link } from "react-router-dom";
 import Registration from "./Registration";
 import Login from "./Login";
+import Map from "./Map";
 
 export default function Welcome() {
     return (
-        <HashRouter>
-            <div className="welcome">
-                <h1 className="mainHeading">Amazing Trips to Remember</h1>
-                <img src="./assets/map.png" alt="Globe Image"></img>
-
-                <Route path="/" exact>
-                    <Login />
-                    <p>
-                        <Link to="/registration">Go to registration</Link>
-                    </p>
-                </Route>
-                <Route path="/registration">
-                    <Registration />
-                    <p>
-                        <Link to="/">Go to login</Link>
-                    </p>
-                </Route>
-                <Route path="/hello">
-                    <h1>Hello</h1>
-                </Route>
-            </div>
-        </HashRouter>
+        <BrowserRouter>
+            <header className="appHeader">
+                <Link to="/"> Login </Link>
+                <Link to="/registration"> Register </Link>
+                <Link to="/map"> Map </Link>
+            </header>
+            <Route path="/map" exact>
+                <Map></Map>
+            </Route>
+            <main>
+                <section className="app">
+                    <section className="appContent">
+                        <Route path="/" exact>
+                            <Login></Login>
+                        </Route>
+                        <Route path="/registration">
+                            <Registration />
+                        </Route>
+                        <Route path="/hello">
+                            <h1>Hello</h1>
+                        </Route>
+                    </section>
+                </section>
+            </main>
+        </BrowserRouter>
     );
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "../axios";
 
 export default function Registration() {
@@ -56,6 +57,9 @@ export default function Registration() {
                 ></input>
                 <button type="submit">Register</button>
             </form>
+            <p>
+                <Link to="/">Go to login</Link>
+            </p>
             {errorMessage && <p>{errorMessage}</p>}
         </div>
     );
