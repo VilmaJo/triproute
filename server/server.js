@@ -12,11 +12,12 @@ const compression = require("compression");
 const cookieSession = require("cookie-session");
 const path = require("path");
 const csurf = require("csurf");
+const geometries = require("./geometries.json");
 
 //for resetting password
 const cryptoRandomString = require("crypto-random-string");
 
-const { createUser, getUserByEmail } = require("./db");
+const { createUser, getUserByEmail, getGeometries } = require("./db");
 const { login } = require("./login");
 
 app.use(compression());
@@ -42,6 +43,14 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
 app.get("/api/user/id", (request, response) => {
     response.json({ user: request.session.user });
+});
+
+app.get("/api/geom", (request, response) => {
+    // console.log("GEOMETRIES", geometries);
+    getGeometries(1).then((result) => {
+        console.log("server.js API/GEOM", result);
+    });
+    response.json("ok");
 });
 
 app.post("/api/login", (request, response) => {

@@ -1,3 +1,4 @@
+DROP TABLE if exists geometries;
 DROP TABLE if exists users;
 
 CREATE TABLE users (
@@ -10,3 +11,5 @@ CREATE TABLE users (
     password_hash VARCHAR NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE geometries (id SERIAL PRIMARY KEY, name varchar, geom geometry);

@@ -61,7 +61,20 @@ function getUserByEmail(email) {
         });
 }
 
+function getGeometries() {
+    return db
+        .query(`SELECT * FROM geometries WHERE `)
+        .then((result) => {
+            console.log("db.js", result);
+            return result;
+        })
+        .catch((error) => {
+            console.log("db getGeometries error", error);
+        });
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
+    getGeometries,
 };
