@@ -34,10 +34,18 @@ export default function Map() {
 
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-            style: basicLayer || "mapbox://styles/mapbox/light-v10",
+            style: "mapbox://styles/mapbox/streets-v11",
             center: [lng, lat],
             zoom: zoom,
         });
+    }, []);
+
+    useEffect(() => {
+        console.log("useEffect basicLayer", basicLayer);
+        if (!basicLayer) {
+            return;
+        }
+        map.current.setStyle(basicLayer);
 
         map.current.on("move", () => {
             setLng(map.current.getCenter().lng.toFixed(zoom));
@@ -63,12 +71,12 @@ export default function Map() {
 
         styles.map((style) => {
             if (style[value]) {
-                console.log("TruE", style[value]);
+                // console.log("TruE", style[value]);
                 setBasicLayer(style[value]);
                 return;
             }
         });
-        console.log("onRadioClick basicLayer", basicLayer);
+        // console.log("onRadioClick basicLayer", basicLayer);
     }
 
     function onButtonLinestringClick() {
@@ -144,7 +152,6 @@ export default function Map() {
         <div>
             <div ref={mapContainer} className="mapContainer">
                 <div className="basicLayer">
-                    <h1>{basicLayer}</h1>
                     <p>
                         <input
                             type="radio"
@@ -173,7 +180,12 @@ export default function Map() {
                         Light
                     </p>
                     <p>
-                        <input type="radio" value="Dark" name="basiclayer" />
+                        <input
+                            type="radio"
+                            value="Dark"
+                            name="basiclayer"
+                            onClick={onRadioClick}
+                        />
                         Dark
                     </p>
                     <p>
