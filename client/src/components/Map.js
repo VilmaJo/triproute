@@ -19,9 +19,7 @@ export default function Map() {
     const [lng, setLng] = useState(9.7);
     const [lat, setLat] = useState(53.35);
     const [zoom, setZoom] = useState(4);
-    const [basicLayer, setBasicLayer] = useState(
-        "mapbox://styles/mapbox/light-v10"
-    );
+    const [basicLayer, setBasicLayer] = useState();
     const [geomFeatures, setGeomFeatures] = useState();
 
     useEffect(() => {
@@ -36,7 +34,7 @@ export default function Map() {
 
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-            style: basicLayer,
+            style: basicLayer || "mapbox://styles/mapbox/light-v10",
             center: [lng, lat],
             zoom: zoom,
         });
@@ -46,16 +44,29 @@ export default function Map() {
             setLat(map.current.getCenter().lat.toFixed(zoom));
             setZoom(map.current.getZoom().toFixed(2));
         });
-    }, []);
+
+        map.current.on("click", (event) => {
+            // console.log(
+            //     "onMapClick event",
+            //     event.lngLat.wrap(),
+            //     event.lngLat.lng,
+            //     event.lngLat.lat
+            // );
+        });
+    }, [basicLayer]);
 
     // console.log("geomFeatures", geomFeatures);
     //map.addSource(geomFeatures);
 
     function onRadioClick(event) {
         let value = event.target.value;
+
         styles.map((style) => {
-            console.log("style[value", style[value]);
-            return setBasicLayer(style[value]);
+            if (style[value]) {
+                console.log("TruE", style[value]);
+                setBasicLayer(style[value]);
+                return;
+            }
         });
         console.log("onRadioClick basicLayer", basicLayer);
     }
@@ -133,6 +144,7 @@ export default function Map() {
         <div>
             <div ref={mapContainer} className="mapContainer">
                 <div className="basicLayer">
+                    <h1>{basicLayer}</h1>
                     <p>
                         <input
                             type="radio"
