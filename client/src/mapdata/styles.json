@@ -1,12 +1,12 @@
 [
-    { "Mapbox Streets": "mapbox://styles/mapbox/streets-v11" },
-    { "Mapbox Outdoors": "mapbox://styles/mapbox/outdoors-v11" },
-    { "Mapbox Light": "mapbox://styles/mapbox/light-v10" },
-    { "Mapbox Dark": "mapbox://styles/mapbox/dark-v10" },
-    { "Mapbox Satellite": "mapbox://styles/mapbox/satellite-v9" },
+    { "Streets": "mapbox://styles/mapbox/streets-v11" },
+    { "Outdoors": "mapbox://styles/mapbox/outdoors-v11" },
+    { "Light": "mapbox://styles/mapbox/light-v10" },
+    { "Dark": "mapbox://styles/mapbox/dark-v10" },
+    { "Satellite": "mapbox://styles/mapbox/satellite-v9" },
     {
-        "Mapbox Satellite Streets": "mapbox://styles/mapbox/satellite-streets-v11"
+        "SatelliteStreets": "mapbox://styles/mapbox/satellite-streets-v11"
     },
-    { "Mapbox Navigation Day": "mapbox://styles/mapbox/navigation-day-v1" },
-    { "Mapbox Navigation Night": "mapbox://styles/mapbox/navigation-night-v1" }
+    { "NavigationDay": "mapbox://styles/mapbox/navigation-day-v1" },
+    { "NavigationNight": "mapbox://styles/mapbox/navigation-night-v1" }
 ]

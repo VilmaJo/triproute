@@ -19,7 +19,9 @@ export default function Map() {
     const [lng, setLng] = useState(9.7);
     const [lat, setLat] = useState(53.35);
     const [zoom, setZoom] = useState(4);
-    const [basicLayer, setBasicLayer] = useState("");
+    const [basicLayer, setBasicLayer] = useState(
+        "mapbox://styles/mapbox/light-v10"
+    );
     const [geomFeatures, setGeomFeatures] = useState();
 
     useEffect(() => {
@@ -34,7 +36,7 @@ export default function Map() {
 
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-            style: "mapbox://styles/mapbox/light-v10",
+            style: basicLayer,
             center: [lng, lat],
             zoom: zoom,
         });
@@ -50,7 +52,12 @@ export default function Map() {
     //map.addSource(geomFeatures);
 
     function onRadioClick(event) {
-        // setBasicLayer(styles[event.target.value]);
+        let value = event.target.value;
+        styles.map((style) => {
+            console.log("style[value", style[value]);
+            return setBasicLayer(style[value]);
+        });
+        console.log("onRadioClick basicLayer", basicLayer);
     }
 
     function onButtonLinestringClick() {
@@ -129,7 +136,7 @@ export default function Map() {
                     <p>
                         <input
                             type="radio"
-                            value="Mapbox Streets"
+                            value="Streets"
                             name="basiclayer"
                             onClick={onRadioClick}
                         />
@@ -138,7 +145,7 @@ export default function Map() {
                     <p>
                         <input
                             type="radio"
-                            value="Mapbox Outdoors"
+                            value="Outdoors"
                             name="basiclayer"
                             onClick={onRadioClick}
                         />
@@ -147,25 +154,20 @@ export default function Map() {
                     <p>
                         <input
                             type="radio"
-                            value="Mapbox Light"
+                            value="Light"
                             name="basiclayer"
                             onClick={onRadioClick}
-                            checked="checked"
                         />
                         Light
                     </p>
                     <p>
-                        <input
-                            type="radio"
-                            value="Mapbox Dark"
-                            name="basiclayer"
-                        />
+                        <input type="radio" value="Dark" name="basiclayer" />
                         Dark
                     </p>
                     <p>
                         <input
                             type="radio"
-                            value="Mapbox Satellite"
+                            value="Satellite"
                             name="basiclayer"
                             onClick={onRadioClick}
                         />
@@ -174,7 +176,7 @@ export default function Map() {
                     <p>
                         <input
                             type="radio"
-                            value="Mapbox Satellite Streets"
+                            value="SatelliteStreets"
                             name="basiclayer"
                             onClick={onRadioClick}
                         />
@@ -183,7 +185,7 @@ export default function Map() {
                     <p>
                         <input
                             type="radio"
-                            value="Mapbox Navigation Day"
+                            value="NavigationDay"
                             name="basiclayer"
                             onClick={onRadioClick}
                         />
@@ -192,7 +194,7 @@ export default function Map() {
                     <p>
                         <input
                             type="radio"
-                            value="Mapbox Navigation Night"
+                            value="NavigationNight"
                             name="basiclayer"
                             onClick={onRadioClick}
                         />

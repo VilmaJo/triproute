@@ -134,14 +134,6 @@ footer {
     margin: auto;
 }
 
-.mapboxgl-control-container {
-    display: flex;
-    max-height: 100px;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-}
-
 .mapboxgl-ctrl-attrib {
     display: flex;
     flex-wrap: wrap;
@@ -208,10 +200,19 @@ footer {
     max-height: 20px;
 }
 
-/* .basicLayer {
+.mapboxgl-ctrl-bottom-right {
     display: flex;
-    flex-direction: column;
-    margin: 20px;
-    background-color: green;
-    padding: 50px;
-} */
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+    justify-self: center;
+}
+
+.mapboxgl-control-container {
+    background-color: yellow;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    min-height: 500px;
+}
