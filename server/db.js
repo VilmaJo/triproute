@@ -63,7 +63,7 @@ function getUserByEmail(email) {
 
 function getGeometries() {
     return db
-        .query(`SELECT * FROM geometries WHERE `)
+        .query(`SELECT * FROM geometries `)
         .then((result) => {
             console.log("db.js", result);
             return result;

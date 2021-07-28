@@ -1,0 +1,32 @@
+[
+    {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [10.869391682417449, 49.9199544142833]
+        },
+        "properties": {
+            "title": "Mapbox DC"
+        }
+    },
+    {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [10.669391682417449, 49.7199544142833]
+        },
+        "properties": {
+            "title": "Mapbox DC"
+        }
+    },
+    {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [10.469391682417449, 49.5199544142833]
+        },
+        "properties": {
+            "title": "Mapbox DC"
+        }
+    }
+]

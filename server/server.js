@@ -12,7 +12,9 @@ const compression = require("compression");
 const cookieSession = require("cookie-session");
 const path = require("path");
 const csurf = require("csurf");
-const geometries = require("./geometries.json");
+const points = require("./geometries/points.json");
+const lines = require("./geometries/lines.json");
+const linestring = require("./geometries/linestring.json");
 
 //for resetting password
 const cryptoRandomString = require("crypto-random-string");
@@ -46,11 +48,12 @@ app.get("/api/user/id", (request, response) => {
 });
 
 app.get("/api/geom", (request, response) => {
-    // console.log("GEOMETRIES", geometries);
-    getGeometries(1).then((result) => {
-        console.log("server.js API/GEOM", result);
-    });
-    response.json("ok");
+    console.log("GEOMETRIE points", points);
+    console.log("GEOMETRIE lines", lines);
+    // getGeometries(1).then((result) => {
+    //     console.log("server.js API/GEOM", result);
+    // });
+    response.json({ POINTS: points, LINES: lines, LINESTRING: linestring });
 });
 
 app.post("/api/login", (request, response) => {

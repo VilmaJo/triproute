@@ -51,23 +51,23 @@ export default function Map() {
 
     function onRadioClick(event) {
         // setBasicLayer(styles[event.target.value]);
-        console.log(
-            "onRadioClick",
-            event.target.value,
-            geomFeatures.data.features[0].geometry.coordinates
-        );
     }
 
-    function onButtonClick() {
-        map.current.addSource("bus-routes", {
+    function onButtonLinestringClick() {
+        // MULTILINES MULTILINES MULTILINES MULTILINES MULTILINES
+        console.log("linestring", geomFeatures.LINESTRING);
+        map.current.addSource("lines", {
             type: "geojson",
-            data: "https://opendata.arcgis.com/datasets/4347f3565fbe4d5dbb97b016768b8907_0.geojson",
+            data: {
+                type: "FeatureCollection",
+                features: geomFeatures.LINESTRING,
+            },
         });
 
         map.current.addLayer({
-            id: "bus-routes-line",
+            id: "linestring",
             type: "line",
-            source: "bus-routes",
+            source: "lines",
             paint: {
                 "line-color": "#cc0909",
                 "line-width": 4,
@@ -75,92 +75,143 @@ export default function Map() {
         });
     }
 
-    function onButtonCycleClick() {
-        //geomFeatures.data.features[0].geometry.coordinates
+    function onButtonLineClick() {
+        // LINES LINES LINES LINES LINES
         console.log("onButtonClick", geomFeatures);
-        map.current.addSource("trips", {
+        map.current.addSource("line", {
             type: "geojson",
-            data: geomFeatures.data.features[0],
+            data: {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                    type: "LineString",
+                    coordinates: geomFeatures.LINES,
+                },
+            },
         });
 
         map.current.addLayer({
-            id: "trips-around",
+            id: "line",
             type: "line",
-            source: "trips",
+            source: "line",
             paint: {
-                "line-color": "#15cc09",
-                "line-width": 14,
+                "line-color": "#e3a1a1",
+                "line-width": 3,
+            },
+        });
+    }
+
+    function onButtonPointClick() {
+        // POINTS POINTS POINTS
+        map.current.addSource("points", {
+            type: "geojson",
+            data: {
+                type: "FeatureCollection",
+                features: geomFeatures.POINTS,
+            },
+        });
+
+        map.current.addLayer({
+            id: "points",
+            type: "circle",
+            source: "points",
+            paint: {
+                "circle-radius": 5,
+                "circle-color": "rgb(185, 212, 218)",
             },
         });
     }
 
     return (
         <div>
-            <div ref={mapContainer} className="mapContainer"></div>
+            <div ref={mapContainer} className="mapContainer">
+                <div className="basicLayer">
+                    <p>
+                        <input
+                            type="radio"
+                            value="Mapbox Streets"
+                            name="basiclayer"
+                            onClick={onRadioClick}
+                        />
+                        Streets
+                    </p>
+                    <p>
+                        <input
+                            type="radio"
+                            value="Mapbox Outdoors"
+                            name="basiclayer"
+                            onClick={onRadioClick}
+                        />
+                        Outdoors
+                    </p>
+                    <p>
+                        <input
+                            type="radio"
+                            value="Mapbox Light"
+                            name="basiclayer"
+                            onClick={onRadioClick}
+                            checked="checked"
+                        />
+                        Light
+                    </p>
+                    <p>
+                        <input
+                            type="radio"
+                            value="Mapbox Dark"
+                            name="basiclayer"
+                        />
+                        Dark
+                    </p>
+                    <p>
+                        <input
+                            type="radio"
+                            value="Mapbox Satellite"
+                            name="basiclayer"
+                            onClick={onRadioClick}
+                        />
+                        Satellite
+                    </p>
+                    <p>
+                        <input
+                            type="radio"
+                            value="Mapbox Satellite Streets"
+                            name="basiclayer"
+                            onClick={onRadioClick}
+                        />
+                        Satellite Streets
+                    </p>
+                    <p>
+                        <input
+                            type="radio"
+                            value="Mapbox Navigation Day"
+                            name="basiclayer"
+                            onClick={onRadioClick}
+                        />
+                        Navigation Day
+                    </p>
+                    <p>
+                        <input
+                            type="radio"
+                            value="Mapbox Navigation Night"
+                            name="basiclayer"
+                            onClick={onRadioClick}
+                        />
+                        Navigation Night
+                    </p>
+                </div>
+            </div>
 
             <div className="mapInteractive">
-                <p>
+                <div className="latLonZoom">
                     Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-                </p>
+                </div>
 
-                <button onClick={onButtonClick}>Car</button>
-                <button onClick={onButtonCycleClick}>Bicyle</button>
-                <button>Kanu</button>
-                <button>Sailing</button>
-                <button>Hiking</button>
-                <button>Climbing</button>
-                <div className="basicLayer">
-                    <input
-                        type="radio"
-                        value="Mapbox Streets"
-                        name="basiclayer"
-                        onClick={onRadioClick}
-                    />
-                    Streets
-                    <input
-                        type="radio"
-                        value="Mapbox Outdoors"
-                        name="basiclayer"
-                        onClick={onRadioClick}
-                    />
-                    Outdoors
-                    <input
-                        type="radio"
-                        value="Mapbox Light"
-                        name="basiclayer"
-                        onClick={onRadioClick}
-                    />
-                    Light
-                    <input type="radio" value="Mapbox Dark" name="basiclayer" />
-                    Dark
-                    <input
-                        type="radio"
-                        value="Mapbox Satellite"
-                        name="basiclayer"
-                        onClick={onRadioClick}
-                    />
-                    Satellite
-                    <input
-                        type="radio"
-                        value="Mapbox Satellite Streets"
-                        name="basiclayer"
-                        onClick={onRadioClick}
-                    />
-                    Satellite Streets
-                    <input
-                        type="radio"
-                        value="Mapbox Navigation Day"
-                        name="basiclayer"
-                        onClick={onRadioClick}
-                    />
-                    Navigation Day
-                    <input
-                        type="radio"
-                        value="Mapbox Navigation Night"
-                        name="basiclayer"
-                        onClick={onRadioClick}
-                    />
-                    Navigation Night
+                <div className="routeButtonsDiv">
+                    <button onClick={onButtonLinestringClick}>
+                        Linestring
+                    </button>
+                    <button onClick={onButtonLineClick}>Line</button>
+                    <button onClick={onButtonPointClick}>Points</button>
                 </div>
             </div>
         </div>

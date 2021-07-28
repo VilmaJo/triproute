@@ -152,14 +152,60 @@ footer {
 .mapInteractive {
     max-width: 800px;
     max-height: 100px;
-    margin: 40px auto;
+    margin: 10px auto;
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+
+    /*align-content: center;
+    justify-items: center;
+    align-items: center; */
+}
+
+.latLonZoom {
+    font-size: 14px;
+    max-height: 50px;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+}
+
+.routeButtonsDiv {
+    max-height: 50px;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+}
+
+.basicLayer {
+    background-color: rgba(8, 8, 8, 0.529);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+    justify-content: center;
+    max-height: 180px;
+    padding: 5px;
+    margin: 15px;
+}
+
+.basicLayer input {
+    display: flex;
+    align-items: center;
+    margin: 5px;
 }
 
 .mapInteractive button {
     margin: 5px;
+}
+
+.basicLayer p {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    max-height: 20px;
 }
 
 /* .basicLayer {
