@@ -1,0 +1,5 @@
+ id | first_name | last_name |       profile_url        | bio |         email          |                        password_hash                         |         created_at         
+----+------------+-----------+--------------------------+-----+------------------------+--------------------------------------------------------------+----------------------------
+  1 | Vilma      | Jo        | /assets/defaultImage.jpg |     | vilma.jochim@posteo.de | $2a$10$GTWIAkqCbM03x7Ol4BhE6eSep/0viAj63x070v.4XwpLI0RwRO0dK | 2021-07-26 17:31:20.054651
+(1 row)
+

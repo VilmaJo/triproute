@@ -216,3 +216,10 @@ footer {
     justify-content: center;
     min-height: 500px;
 }
+
+.FormAddRoutes {
+    display: flex;
+    justify-content: center;
+    max-height: 50px;
+    margin: 20px;
+}

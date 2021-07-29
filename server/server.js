@@ -13,13 +13,18 @@ const cookieSession = require("cookie-session");
 const path = require("path");
 const csurf = require("csurf");
 const points = require("./geometries/points.json");
-const lines = require("./geometries/lines.json");
 const linestring = require("./geometries/linestring.json");
 
 //for resetting password
 const cryptoRandomString = require("crypto-random-string");
 
-const { createUser, getUserByEmail, getGeometries } = require("./db");
+const {
+    createUser,
+    getUserByEmail,
+    getGeometries,
+    createTrip,
+    inserGeometry,
+} = require("./db");
 const { login } = require("./login");
 
 app.use(compression());
@@ -48,12 +53,30 @@ app.get("/api/user/id", (request, response) => {
 });
 
 app.get("/api/geom", (request, response) => {
-    console.log("GEOMETRIE points", points);
-    console.log("GEOMETRIE lines", lines);
+    // console.log("GEOMETRIE points", points);
     // getGeometries(1).then((result) => {
     //     console.log("server.js API/GEOM", result);
     // });
-    response.json({ POINTS: points, LINES: lines, LINESTRING: linestring });
+    response.json({ POINTS: points, LINESTRING: linestring });
+});
+
+app.post("/api/geom", (request, response) => {
+    const userId = request.session.user.id;
+    const { tripName, tripType, coordinates } = request.body;
+
+    inserGeometry(tripName, coordinates)
+        .then((result) => {
+            console.log("server.js insert Geometry", result);
+            response.json(result);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
+    // createTrip(userId, tripName, tripType, coordinates2).then((result) => {
+    //     console.log("BIG TRIP RESULT", result);
+    //     response.json(result);
+    // });
 });
 
 app.post("/api/login", (request, response) => {

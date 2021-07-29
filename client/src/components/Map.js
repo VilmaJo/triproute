@@ -21,6 +21,9 @@ export default function Map() {
     const [zoom, setZoom] = useState(4);
     const [basicLayer, setBasicLayer] = useState();
     const [geomFeatures, setGeomFeatures] = useState();
+    const [tripCoordinates, setTripCoordinates] = useState();
+    const [formData, setFormData] = useState({});
+    const [error, setError] = useState("");
 
     useEffect(() => {
         axios.get("/api/geom").then((response) => {
@@ -44,30 +47,26 @@ export default function Map() {
             setZoom(map.current.getZoom().toFixed(2));
         });
 
+        let lngLatClicked = [];
         map.current.on("click", (event) => {
-            // new mapboxgl.Popup()
-            //     .setLngLat(event.lngLat)
-            //     .setHTML("you clicked here: <br/>" + event.lngLat)
-            //     .addTo(map.current);
-
-            let lngLat = [];
-            let lng = [];
-            let lat = [];
-            lngLat += event.lngLat.wrap();
-            lng += event.lngLat.wrap().lng;
-            lat += event.lngLat.wrap().lat;
-
-            console.log("onMapClick event", lngLat);
+            console.log("mapClick", event.lngLat);
+            lngLatClicked.push(event.lngLat);
+            let coordPair = [];
+            lngLatClicked.map((array) => {
+                coordPair.push([array.lng, array.lat]);
+            });
+            setTripCoordinates(coordPair);
         });
 
         map.current.on("mousemove", function (e) {
+            // console.log(e);
             document.getElementById("info").innerHTML =
                 // e.point is the x, y coordinates of the mousemove event relative
                 // to the top-left corner of the map
                 JSON.stringify(e.point) +
                 "<br />" +
                 // e.lngLat is the longitude, latitude geographical position of the event
-                JSON.stringify(e.lngLat.wrap());
+                JSON.stringify(e.lngLat.toString());
         });
     }, []);
 
@@ -82,7 +81,28 @@ export default function Map() {
     //map.addSource(geomFeatures);
 
     function onSavePointsClick() {
-        axios.post("/api/geom");
+        console.log("onSavePintsClick", tripCoordinates);
+    }
+    function onFormSubmit(event) {
+        event.preventDefault();
+        let tripName = formData.name;
+        let tripType = formData.tripType;
+        let coordinates = tripCoordinates;
+
+        axios
+            .post("/api/geom", { tripName, tripType, coordinates })
+            .then(() => {
+                console.log("It has been saved");
+                window.location.replace("/map");
+            })
+            .catch((error) => {
+                console.log("[registrations.js: error.response.data]", error);
+                setError({ error: error.message });
+            });
+    }
+
+    function onChange(event) {
+        setFormData({ ...formData, [event.target.name]: event.target.value });
     }
 
     function onRadioClick(event) {
@@ -116,32 +136,6 @@ export default function Map() {
             paint: {
                 "line-color": "#cc0909",
                 "line-width": 4,
-            },
-        });
-    }
-
-    function onButtonLineClick() {
-        // LINES LINES LINES LINES LINES
-        console.log("onButtonClick", geomFeatures);
-        map.current.addSource("line", {
-            type: "geojson",
-            data: {
-                type: "Feature",
-                properties: {},
-                geometry: {
-                    type: "LineString",
-                    coordinates: geomFeatures.LINES,
-                },
-            },
-        });
-
-        map.current.addLayer({
-            id: "line",
-            type: "line",
-            source: "line",
-            paint: {
-                "line-color": "#e3a1a1",
-                "line-width": 3,
             },
         });
     }
@@ -245,6 +239,36 @@ export default function Map() {
                     </p>
                 </div>
             </div>
+            <div className="FormAddRoutes">
+                <form
+                    method="POST"
+                    onSubmit={onFormSubmit}
+                    className="registrationForm"
+                >
+                    <input
+                        type="text"
+                        name="name"
+                        required
+                        placeholder="Name of the trip"
+                        onChange={onChange}
+                    ></input>
+                    <select
+                        id="tripType"
+                        name="tripType"
+                        required
+                        onChange={onChange}
+                    >
+                        <option disabled selected value>
+                            Select the type of trip
+                        </option>
+                        <option value="car">Car</option>
+                        <option value="bike">Bike</option>
+                        <option value="walk">Foot</option>
+                        <option value="boat">Boat</option>
+                    </select>
+                    <button type="submit">Save Route</button>
+                </form>
+            </div>
 
             <div className="mapInteractive">
                 <div className="latLonZoom">
@@ -255,7 +279,6 @@ export default function Map() {
                     <button onClick={onButtonLinestringClick}>
                         Linestring
                     </button>
-                    <button onClick={onButtonLineClick}>Line</button>
                     <button onClick={onButtonPointClick}>Points</button>
                 </div>
                 <div className="uploadData">

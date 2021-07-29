@@ -1,9 +1,6 @@
 [
     {
         "type": "Feature",
-        "properties": {
-            "color": "#F7455D"
-        },
         "geometry": {
             "type": "LineString",
             "coordinates": [
@@ -17,13 +14,15 @@
                 [16.188050345207063, 46.76947408017183],
                 [15.386048431771437, 46.584797871248924]
             ]
+        },
+        "properties": {
+            "name": "Radreise",
+            "type": "bike",
+            "userId": 1
         }
     },
     {
         "type": "Feature",
-        "properties": {
-            "color": "#33C9EB"
-        },
         "geometry": {
             "type": "LineString",
             "coordinates": [
@@ -37,6 +36,11 @@
                 [16.588050345207063, 46.76947408017183],
                 [15.086048431771437, 46.584797871248924]
             ]
+        },
+        "properties": {
+            "name": "Geil Peilo Tour",
+            "type": "car",
+            "userId": 1
         }
     }
 ]
