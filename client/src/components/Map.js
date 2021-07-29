@@ -16,8 +16,8 @@ export default function Map() {
     // const dispatch = useDispatch();
     const mapContainer = useRef(null);
     const map = useRef(null);
-    const [lng, setLng] = useState(9.7);
-    const [lat, setLat] = useState(53.35);
+    const [lng, setLng] = useState(9.0);
+    const [lat, setLat] = useState(50.35);
     const [zoom, setZoom] = useState(4);
     const [basicLayer, setBasicLayer] = useState();
     const [geomFeatures, setGeomFeatures] = useState();
@@ -34,19 +34,10 @@ export default function Map() {
 
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-            style: "mapbox://styles/mapbox/streets-v11",
+            style: "mapbox://styles/mapbox/light-v10",
             center: [lng, lat],
             zoom: zoom,
         });
-    }, []);
-
-    useEffect(() => {
-        console.log("useEffect basicLayer", basicLayer);
-        if (!basicLayer) {
-            return;
-        }
-        map.current.setStyle(basicLayer);
-
         map.current.on("move", () => {
             setLng(map.current.getCenter().lng.toFixed(zoom));
             setLat(map.current.getCenter().lat.toFixed(zoom));
@@ -54,17 +45,45 @@ export default function Map() {
         });
 
         map.current.on("click", (event) => {
-            // console.log(
-            //     "onMapClick event",
-            //     event.lngLat.wrap(),
-            //     event.lngLat.lng,
-            //     event.lngLat.lat
-            // );
+            // new mapboxgl.Popup()
+            //     .setLngLat(event.lngLat)
+            //     .setHTML("you clicked here: <br/>" + event.lngLat)
+            //     .addTo(map.current);
+
+            let lngLat = [];
+            let lng = [];
+            let lat = [];
+            lngLat += event.lngLat.wrap();
+            lng += event.lngLat.wrap().lng;
+            lat += event.lngLat.wrap().lat;
+
+            console.log("onMapClick event", lngLat);
         });
+
+        map.current.on("mousemove", function (e) {
+            document.getElementById("info").innerHTML =
+                // e.point is the x, y coordinates of the mousemove event relative
+                // to the top-left corner of the map
+                JSON.stringify(e.point) +
+                "<br />" +
+                // e.lngLat is the longitude, latitude geographical position of the event
+                JSON.stringify(e.lngLat.wrap());
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!basicLayer) {
+            return;
+        }
+        map.current.setStyle(basicLayer);
     }, [basicLayer]);
 
     // console.log("geomFeatures", geomFeatures);
     //map.addSource(geomFeatures);
+
+    function onSavePointsClick() {
+        axios.post("/api/geom");
+    }
 
     function onRadioClick(event) {
         let value = event.target.value;
@@ -238,6 +257,12 @@ export default function Map() {
                     </button>
                     <button onClick={onButtonLineClick}>Line</button>
                     <button onClick={onButtonPointClick}>Points</button>
+                </div>
+                <div className="uploadData">
+                    <button onClick={onSavePointsClick}>Save Points</button>
+                </div>
+                <div>
+                    <p id="info"></p>
                 </div>
             </div>
         </div>
