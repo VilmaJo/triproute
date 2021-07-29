@@ -29,3 +29,12 @@ CREATE TABLE trips (
      geom GEOMETRY
 
 );
+
+CREATE TABLE trips (
+     id SERIAL PRIMARY KEY,
+     userId INT REFERENCES users(id) NOT NULL,
+     tripName VARCHAR(255) NOT NULL,
+     tripType VARCHAR(255) NOT NULL,
+     coords REAL[],
+
+);

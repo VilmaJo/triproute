@@ -27,7 +27,7 @@ export default function Map() {
 
     useEffect(() => {
         axios.get("/api/geom").then((response) => {
-            console.log("map api/geom ", response.data[1]);
+            console.log("map api/geom ", response.data);
             return setGeomFeatures(response.data);
         });
     }, []);
@@ -59,13 +59,9 @@ export default function Map() {
         });
 
         map.current.on("mousemove", function (e) {
-            // console.log(e);
             document.getElementById("info").innerHTML =
-                // e.point is the x, y coordinates of the mousemove event relative
-                // to the top-left corner of the map
                 JSON.stringify(e.point) +
                 "<br />" +
-                // e.lngLat is the longitude, latitude geographical position of the event
                 JSON.stringify(e.lngLat.toString());
         });
     }, []);
@@ -77,12 +73,6 @@ export default function Map() {
         map.current.setStyle(basicLayer);
     }, [basicLayer]);
 
-    // console.log("geomFeatures", geomFeatures);
-    //map.addSource(geomFeatures);
-
-    function onSavePointsClick() {
-        console.log("onSavePintsClick", tripCoordinates);
-    }
     function onFormSubmit(event) {
         event.preventDefault();
         let tripName = formData.name;
@@ -107,36 +97,48 @@ export default function Map() {
 
     function onRadioClick(event) {
         let value = event.target.value;
-
         styles.map((style) => {
             if (style[value]) {
-                // console.log("TruE", style[value]);
                 setBasicLayer(style[value]);
                 return;
             }
         });
-        // console.log("onRadioClick basicLayer", basicLayer);
     }
 
     function onButtonLinestringClick() {
         // MULTILINES MULTILINES MULTILINES MULTILINES MULTILINES
-        console.log("linestring", geomFeatures.LINESTRING);
-        map.current.addSource("lines", {
-            type: "geojson",
-            data: {
-                type: "FeatureCollection",
-                features: geomFeatures.LINESTRING,
-            },
-        });
+        const colors = {
+            car: "#e76f51",
+            bike: "#2A9D8F",
+            walk: "#E9C46A",
+            boat: "#F4A261",
+        };
 
-        map.current.addLayer({
-            id: "linestring",
-            type: "line",
-            source: "lines",
-            paint: {
-                "line-color": "#cc0909",
-                "line-width": 4,
-            },
+        geomFeatures.map((feature) => {
+            map.current.addSource(feature.tripname, {
+                type: "geojson",
+                data: {
+                    type: "Feature",
+                    geometry: {
+                        type: "LineString",
+                        coordinates: feature.coords,
+                    },
+                    properties: {
+                        name: feature.tripname,
+                        type: feature.triptype,
+                        userId: feature.userId,
+                    },
+                },
+            });
+            map.current.addLayer({
+                id: JSON.stringify(feature.id),
+                type: "line",
+                source: feature.tripname,
+                paint: {
+                    "line-color": colors[feature.triptype],
+                    "line-width": 4,
+                },
+            });
         });
     }
 
@@ -280,9 +282,6 @@ export default function Map() {
                         Linestring
                     </button>
                     <button onClick={onButtonPointClick}>Points</button>
-                </div>
-                <div className="uploadData">
-                    <button onClick={onSavePointsClick}>Save Points</button>
                 </div>
                 <div>
                     <p id="info"></p>

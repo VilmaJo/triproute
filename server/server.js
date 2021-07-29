@@ -23,6 +23,7 @@ const {
     getUserByEmail,
     getGeometries,
     createTrip,
+    getTrips,
 } = require("./db");
 const { login } = require("./login");
 
@@ -56,7 +57,12 @@ app.get("/api/geom", (request, response) => {
     // getGeometries(1).then((result) => {
     //     console.log("server.js API/GEOM", result);
     // });
-    response.json({ POINTS: points, LINESTRING: linestring });
+
+    getTrips().then((result) => {
+        console.log("server.js getTrips", result);
+        response.json(result);
+    });
+    //response.json({ POINTS: points, LINESTRING: linestring });
 });
 
 app.post("/api/geom", (request, response) => {

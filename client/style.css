@@ -16,7 +16,8 @@ body {
     color: rgb(74, 74, 74);
 }
 .appHeader {
-    border: 10px solid rgb(154, 189, 154);
+    /* border: 10px solid rgb(154, 189, 154); */
+    border-bottom: 1px solid rgb(74, 74, 74);
     max-height: 100px;
     max-width: 800px;
     margin: 20px auto;
@@ -28,21 +29,23 @@ body {
 .appHeader a {
     display: flex;
     align-items: center;
-    color: rgb(154, 189, 154);
+    color: rgb(74, 74, 74);
 }
 
 .appHeader button {
     display: flex;
     align-items: center;
     align-self: center;
-    color: rgb(154, 189, 154);
-    max-width: 20px;
+    color: rgb(74, 74, 74);
+    max-width: 200px;
     padding: 20px;
     border: none;
+    font-size: 20px;
 }
 
 .appHeader button:hover {
-    border: 1px solid rgb(154, 189, 154);
+    border: none;
+    text-decoration: underline;
 }
 
 .mainHeading {
@@ -86,12 +89,12 @@ a:hover {
 .tripForm input {
     margin: 5px;
     padding: 5px;
-    border: 1px solid rgb(154, 189, 154);
+    border: 1px solid rgb(74, 74, 74);
     max-height: 30px;
 }
 
 .tripForm input:focus {
-    outline: 2px solid rgb(154, 189, 154);
+    outline: 2px solid rgb(74, 74, 74);
 }
 
 button {
@@ -102,7 +105,7 @@ button {
     max-height: 30px;
     font-size: 18px;
     background-color: white;
-    border: 2px solid rgb(154, 189, 154);
+    border: 2px solid rgb(74, 74, 74);
     font-family: "Lucida Console", "Courier New", monospace;
     font-size: 15px;
 }

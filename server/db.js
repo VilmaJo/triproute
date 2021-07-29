@@ -73,23 +73,43 @@ function getGeometries() {
         });
 }
 
+// function createTrip(userId, tripName, tripType, coordinates) {
+//     console.log("db.js", tripName, coordinates);
+//     return db
+//         .query(
+//             `INSERT INTO trips (userId, tripName, tripType, geom) VALUES (
+//                 $1,
+//                 $2,
+//                 $3,
+//                 ST_GeomFromGeoJSON
+//                 (
+//                     '{
+//                         "type":"Linestring",
+//                         "coordinates":[${JSON.stringify(coordinates)}]
+//                     }'
+//                 )
+//             ) RETURNING *`,
+//             [userId, tripName, tripType]
+//         )
+//         .then((results) => {
+//             console.log("db.js geometry", results.rows[0]);
+//             return results.rows[0];
+//         })
+//         .catch((error) => {
+//             console.log(error);
+//         });
+// }
+
 function createTrip(userId, tripName, tripType, coordinates) {
     console.log("db.js", tripName, coordinates);
     return db
         .query(
-            `INSERT INTO trips (userId, tripName, tripType, geom) VALUES (
+            `INSERT INTO trips (userId, tripName, tripType, coords) VALUES (
                 $1,
                 $2,
                 $3,
-                ST_GeomFromGeoJSON
-                (
-                    '{
-                        "type":"Linestring",
-                        "coordinates":[${JSON.stringify(coordinates)}]
-                    }'
-                )
-            ) RETURNING *`,
-            [userId, tripName, tripType]
+                $4) RETURNING *`,
+            [userId, tripName, tripType, coordinates]
         )
         .then((results) => {
             console.log("db.js geometry", results.rows[0]);
@@ -100,18 +120,17 @@ function createTrip(userId, tripName, tripType, coordinates) {
         });
 }
 
-// CREATE TABLE trips (
-//      id SERIAL PRIMARY KEY,
-//      userId INT REFERENCES users(id) NOT NULL,
-//      tripName VARCHAR(255) NOT NULL,
-//      tripType VARCHAR(255) NOT NULL,
-//      coordinates GEOMETRY
-
-// );
+function getTrips() {
+    return db.query(`SELECT * FROM trips`).then((result) => {
+        console.log("db.js getTrips", result.rows[0]);
+        return result.rows;
+    });
+}
 
 module.exports = {
     createUser,
     getUserByEmail,
     getGeometries,
     createTrip,
+    getTrips,
 };
