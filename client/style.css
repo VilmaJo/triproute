@@ -1,11 +1,5 @@
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
-    font-size: 12pt;
-    font-family: "Lucida Console", "Courier New", monospace;
-    height: 100%;
-    color: rgb(74, 74, 74);
 }
 
 /* main {
@@ -15,6 +9,12 @@
     text-align: center;
     padding: 0 20px;
 } */
+body {
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 12pt;
+    height: 100%;
+    color: rgb(74, 74, 74);
+}
 .appHeader {
     border: 10px solid rgb(154, 189, 154);
     max-height: 100px;
@@ -124,11 +124,11 @@ footer {
 */
 
 .mapContainer {
-    display: flex;
+    /* display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     align-self: flex-start;
-    justify-self: flex-start;
+    justify-self: flex-start; */
     height: 600px;
     max-width: 1800px;
     margin: auto;
@@ -171,15 +171,26 @@ footer {
 }
 
 .basicLayer {
-    background-color: rgba(8, 8, 8, 0.529);
-    z-index: 2;
     display: flex;
     flex-direction: column;
-    align-self: flex-end;
-    justify-content: center;
-    max-height: 180px;
-    padding: 5px;
-    margin: 15px;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgb(74, 74, 74, 0.7);
+    z-index: 3;
+    padding: 10px;
+    margin: 10px;
+    max-height: 380px;
+    max-width: 250px;
+}
+
+.basicLayer p {
+    color: white;
+    z-index: 2;
+    max-height: 20px;
+    margin: 3px;
+    display: flex;
+    font-size: 14px;
 }
 
 .basicLayer input {
@@ -192,29 +203,12 @@ footer {
     margin: 5px;
 }
 
-.basicLayer p {
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-items: center;
-    max-height: 20px;
+.mapboxgl-ctrl-attrib-inner a {
+    font-size: 14px;
+    float: right;
 }
-
-.mapboxgl-ctrl-bottom-right {
-    display: flex;
-    align-items: center;
-    justify-items: center;
-    justify-content: center;
-    justify-self: center;
-}
-
-.mapboxgl-control-container {
-    background-color: yellow;
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    min-height: 500px;
+.mapboxgl-ctrl-bottom-left {
+    top: 5px;
 }
 
 .FormAddRoutes {
