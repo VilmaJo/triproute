@@ -23,7 +23,6 @@ const {
     getUserByEmail,
     getGeometries,
     createTrip,
-    inserGeometry,
 } = require("./db");
 const { login } = require("./login");
 
@@ -64,7 +63,7 @@ app.post("/api/geom", (request, response) => {
     const userId = request.session.user.id;
     const { tripName, tripType, coordinates } = request.body;
 
-    inserGeometry(tripName, coordinates)
+    createTrip(userId, tripName, tripType, coordinates)
         .then((result) => {
             console.log("server.js insert Geometry", result);
             response.json(result);
@@ -72,11 +71,6 @@ app.post("/api/geom", (request, response) => {
         .catch((error) => {
             console.log(error);
         });
-
-    // createTrip(userId, tripName, tripType, coordinates2).then((result) => {
-    //     console.log("BIG TRIP RESULT", result);
-    //     response.json(result);
-    // });
 });
 
 app.post("/api/login", (request, response) => {

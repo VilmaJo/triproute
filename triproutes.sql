@@ -1,4 +1,4 @@
--- DROP TABLE if exists geometries;
+DROP TABLE if exists geometries;
 DROP TABLE if exists trips;
 DROP TABLE if exists users;
 
@@ -13,13 +13,19 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- CREATE TABLE geometries (id SERIAL PRIMARY KEY, name varchar, geom geometry);
+CREATE TABLE trips (
+    id SERIAL PRIMARY KEY, 
+    userId INT REFERENCES users(id) NOT NULL,
+    tripName VARCHAR(255) NOT NULL, 
+    tripType VARCHAR(255) NOT NULL, 
+    geom geometry
+);
 
 CREATE TABLE trips (
      id SERIAL PRIMARY KEY,
      userId INT REFERENCES users(id) NOT NULL,
      tripName VARCHAR(255) NOT NULL,
      tripType VARCHAR(255) NOT NULL,
-     coordinates GEOMETRY
+     geom GEOMETRY
 
 );

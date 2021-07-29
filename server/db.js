@@ -73,21 +73,23 @@ function getGeometries() {
         });
 }
 
-function inserGeometry(name, coordinates) {
-    console.log("db.js", name, coordinates);
+function createTrip(userId, tripName, tripType, coordinates) {
+    console.log("db.js", tripName, coordinates);
     return db
         .query(
-            `INSERT INTO geometries (name, geom) VALUES (
-    $1,
-    ST_GeomFromGeoJSON
-    (
-        '{
-            "type":"Linestring",
-            "coordinates":[${JSON.stringify(coordinates)}]
-        }'
-    )
-) RETURNING *`,
-            [name]
+            `INSERT INTO trips (userId, tripName, tripType, geom) VALUES (
+                $1,
+                $2,
+                $3,
+                ST_GeomFromGeoJSON
+                (
+                    '{
+                        "type":"Linestring",
+                        "coordinates":[${JSON.stringify(coordinates)}]
+                    }'
+                )
+            ) RETURNING *`,
+            [userId, tripName, tripType]
         )
         .then((results) => {
             console.log("db.js geometry", results.rows[0]);
@@ -106,25 +108,10 @@ function inserGeometry(name, coordinates) {
 //      coordinates GEOMETRY
 
 // );
-function createTrip(userId, tripName, tripType, coordinates) {
-    return db
-        .query(
-            `INSERT INTO trips (userId, tripName, tripType, coordinates) VALUES ($1, $2, $3, $4) RETURNING *`,
-            [userId, tripName, tripType, coordinates]
-        )
-        .then((result) => {
-            console.log("db.js createTrip", result.rows);
-            return result.rows;
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-}
 
 module.exports = {
     createUser,
     getUserByEmail,
     getGeometries,
     createTrip,
-    inserGeometry,
 };
