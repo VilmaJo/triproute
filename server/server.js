@@ -21,9 +21,9 @@ const cryptoRandomString = require("crypto-random-string");
 const {
     createUser,
     getUserByEmail,
-    getGeometries,
     createTrip,
     getTrips,
+    insertBio,
 } = require("./db");
 const { login } = require("./login");
 
@@ -49,9 +49,27 @@ app.use((request, response, next) => {
 app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
 app.get("/api/user/id", (request, response) => {
-    response.json({ user: request.session.user });
+    console.log("get api/user/id", request.session.user);
+    // response.json({ user: request.session.user });
+    if (request.session.user.email) {
+        console.log("yes, we have an email!");
+        getUserByEmail(request.session.user.email).then((user) => {
+            response.json({ user: user });
+        });
+    }
 });
 
+app.post("/api/user/id", (request, response) => {
+    const userId = request.session.user.id;
+    const { bio } = request.body;
+    console.log("request-body", request.body);
+    insertBio(bio, userId).then((result) => {
+        console.log("insertBio result", result);
+        const updatedUser = result;
+        console.log("updatedUser", updatedUser);
+        response.json({ user: updatedUser });
+    });
+});
 app.get("/api/geom", (request, response) => {
     // console.log("GEOMETRIE points", points);
     // getGeometries(1).then((result) => {
@@ -105,7 +123,7 @@ app.post("/api/logout", (request, response) => {
 });
 
 app.post("/api/registration", (request, response) => {
-    const profile_url = "/assets/defaultImage.jpg";
+    const profile_url = "../assets/defaultImage.jpg";
     const { firstName, lastName, email, password } = request.body;
     console.log("server request.body", request.body);
     console.log("server request.session", request.session);
@@ -113,7 +131,7 @@ app.post("/api/registration", (request, response) => {
     createUser({ firstName, lastName, profile_url, email, password })
         .then((user) => {
             console.log("server, user", user);
-            request.session.userId = user.id;
+            request.session.user = user;
             response.json(user);
         })
         .catch((error) => {

@@ -80,6 +80,49 @@ a:hover {
     width: 400px;
     height: auto;
 }
+
+.profileDiv {
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    grid-gap: 100px;
+    margin: 50px;
+}
+.profilePic {
+    display: flex;
+    justify-self: flex-end;
+}
+.profilePicture {
+    height: 250px;
+    width: auto;
+}
+
+.profileInfo h1 {
+    font-size: 25px;
+}
+
+.travelExperienceP {
+    max-width: 300px;
+    padding: 20px;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid rgb(74, 74, 74);
+    border-bottom: 1px solid rgb(74, 74, 74);
+}
+.editModeText {
+    min-width: 300px;
+    min-height: 300px;
+    padding: 20px;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid rgb(74, 74, 74);
+    border-bottom: 1px solid rgb(74, 74, 74);
+}
+
+.editModeText:focus {
+    outline: none;
+    border-top: 1px solid rgb(74, 74, 74);
+    border-bottom: 1px solid rgb(74, 74, 74);
+}
 .tripForm {
     display: flex;
     flex-direction: column;

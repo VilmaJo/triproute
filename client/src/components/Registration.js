@@ -11,7 +11,7 @@ export default function Registration() {
         axios
             .post("/api/registration", formData)
             .then(() => {
-                window.location.replace("/");
+                window.location.replace("/map");
             })
             .catch((error) => {
                 console.log("[registrations.js: error.response.data]", error);

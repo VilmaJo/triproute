@@ -61,44 +61,13 @@ function getUserByEmail(email) {
         });
 }
 
-function getGeometries() {
+function insertBio(bio, userId) {
     return db
-        .query(`SELECT * FROM geometries `)
+        .query(`UPDATE users SET bio=$1 WHERE id=$2 RETURNING *`, [bio, userId])
         .then((result) => {
-            console.log("db.js", result);
-            return result;
-        })
-        .catch((error) => {
-            console.log("db getGeometries error", error);
+            return result.rows[0];
         });
 }
-
-// function createTrip(userId, tripName, tripType, coordinates) {
-//     console.log("db.js", tripName, coordinates);
-//     return db
-//         .query(
-//             `INSERT INTO trips (userId, tripName, tripType, geom) VALUES (
-//                 $1,
-//                 $2,
-//                 $3,
-//                 ST_GeomFromGeoJSON
-//                 (
-//                     '{
-//                         "type":"Linestring",
-//                         "coordinates":[${JSON.stringify(coordinates)}]
-//                     }'
-//                 )
-//             ) RETURNING *`,
-//             [userId, tripName, tripType]
-//         )
-//         .then((results) => {
-//             console.log("db.js geometry", results.rows[0]);
-//             return results.rows[0];
-//         })
-//         .catch((error) => {
-//             console.log(error);
-//         });
-// }
 
 function createTrip(userId, tripName, tripType, coordinates) {
     console.log("db.js", tripName, coordinates);
@@ -130,7 +99,7 @@ function getTrips() {
 module.exports = {
     createUser,
     getUserByEmail,
-    getGeometries,
+    insertBio,
     createTrip,
     getTrips,
 };

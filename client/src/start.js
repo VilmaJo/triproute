@@ -11,7 +11,9 @@ import Welcome from "./components/Welcome";
 
 axios.get("/api/user/id").then((response) => {
     // const store = createStore(reducer applyMiddleware(reduxPromise));
+    console.log("start.js", response.data);
     if (!response.data.user) {
+        console.log("No user logged in");
         ReactDOM.render(
             // <Provider store={store}>
             <Welcome></Welcome>,
