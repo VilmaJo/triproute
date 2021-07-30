@@ -24,6 +24,7 @@ const {
     createTrip,
     getTrips,
     insertBio,
+    getAllUsers,
 } = require("./db");
 const { login } = require("./login");
 
@@ -49,14 +50,13 @@ app.use((request, response, next) => {
 app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
 app.get("/api/user/id", (request, response) => {
-    console.log("get api/user/id", request.session.user);
-    // response.json({ user: request.session.user });
-    if (request.session.user.email) {
-        console.log("yes, we have an email!");
-        getUserByEmail(request.session.user.email).then((user) => {
-            response.json({ user: user });
-        });
+    if (!request.session.user) {
+        response.json({ user: request.session.user });
+        return;
     }
+    getUserByEmail(request.session.user.email).then((user) => {
+        response.json({ user: user });
+    });
 });
 
 app.post("/api/user/id", (request, response) => {
@@ -70,17 +70,19 @@ app.post("/api/user/id", (request, response) => {
         response.json({ user: updatedUser });
     });
 });
-app.get("/api/geom", (request, response) => {
-    // console.log("GEOMETRIE points", points);
-    // getGeometries(1).then((result) => {
-    //     console.log("server.js API/GEOM", result);
-    // });
 
+app.get("/api/users", (request, response) => {
+    getAllUsers().then((result) => {
+        console.log("server.js users", result);
+        response.json(result);
+    });
+});
+
+app.get("/api/geom", (request, response) => {
     getTrips().then((result) => {
         console.log("server.js getTrips", result);
         response.json(result);
     });
-    //response.json({ POINTS: points, LINESTRING: linestring });
 });
 
 app.post("/api/geom", (request, response) => {

@@ -4,6 +4,7 @@ import axios from "../axios";
 import ExperienceEditor from "./ExperienceEditor";
 
 export default function Profile({
+    userId,
     firstName,
     lastName,
     profileUrl,
@@ -24,11 +25,13 @@ export default function Profile({
             <section className="profileInfo">
                 <h1>
                     {firstName} {lastName}
+                    {userId}
                 </h1>
                 {/* <p className="travelExperienceP">{bio}</p> */}
                 <ExperienceEditor
                     bio={bio}
                     onBioChange={onBioChange}
+                    userId={userId}
                 ></ExperienceEditor>
             </section>
         </div>

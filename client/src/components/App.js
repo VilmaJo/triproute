@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "../axios";
 import Map from "./Map";
 import Profile from "./Profile";
+import Users from "./Users";
 
 export default function App() {
     const [user, setUser] = useState({});
@@ -56,15 +57,20 @@ export default function App() {
             <main>
                 <section className="app">
                     <section className="appContent">
-                        <Route path="/profile"></Route>
-                        <Profile
-                            firstName={user.first_name}
-                            lastName={user.last_name}
-                            profileUrl={user.profile_url}
-                            bio={user.bio}
-                            onBioChange={onBioChange}
-                        ></Profile>
-                        <Route path="/users"></Route>
+                        <Route path="/profile">
+                            <Profile
+                                userId={user.id}
+                                firstName={user.first_name}
+                                lastName={user.last_name}
+                                profileUrl={user.profile_url}
+                                bio={user.bio}
+                                onBioChange={onBioChange}
+                            ></Profile>
+                        </Route>
+
+                        <Route path="/users">
+                            <Users></Users>
+                        </Route>
                     </section>
                 </section>
             </main>

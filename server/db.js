@@ -50,6 +50,13 @@ function createUser({
     });
 }
 
+function getAllUsers() {
+    return db.query(`SELECT * FROM users ORDER BY id`).then((result) => {
+        console.log("getAllUsers", result.rows);
+        return result.rows;
+    });
+}
+
 function getUserByEmail(email) {
     return db
         .query("SELECT * FROM users WHERE email = $1", [email])
@@ -102,4 +109,5 @@ module.exports = {
     insertBio,
     createTrip,
     getTrips,
+    getAllUsers,
 };

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "../axios";
 
-export default function ExperienceEditor({ bio, onBioChange }) {
+export default function ExperienceEditor({ bio, onBioChange, userId }) {
+    console.log("ExperienceEditor", userId == undefined);
     const [editMode, setEditMode] = useState(false);
     const [draftText, setDraftText] = useState("");
 
@@ -46,15 +47,20 @@ export default function ExperienceEditor({ bio, onBioChange }) {
         );
     }
 
+    function renderButton() {
+        if (userId == undefined) {
+            return;
+        }
+        return (
+            <button onClick={onEditButtonClick}>{bio ? `Edit` : `Add`}</button>
+        );
+    }
+
     function renderDisplayMode() {
         return (
             <div>
                 <p className="travelExperienceP">{bio}</p>
-                <p>
-                    <button onClick={onEditButtonClick}>
-                        {bio ? `Edit` : `Add`}
-                    </button>
-                </p>
+                <p>{renderButton()}</p>
             </div>
         );
     }
