@@ -25,6 +25,7 @@ export default function Map() {
     const [tripCoordinates, setTripCoordinates] = useState();
     const [formData, setFormData] = useState({});
     const [editMode, setEditMode] = useState(false);
+    const [visibility, setVisibility] = useState();
     const [routesVisibleMode, setRoutesVisibleMode] = useState(false);
     const [myRoutesVisibleMode, setMyRoutesVisibleMode] = useState(false);
     const [userId, setUserId] = useState();
@@ -94,6 +95,7 @@ export default function Map() {
     useEffect(() => {
         console.log("USE EFFECT EDIT MODE", editMode === true);
         let marker;
+        let markers = [];
         if (editMode === true) {
             console.log("marker should be added", marker);
             map.current.on("click", (event) => {
@@ -101,11 +103,13 @@ export default function Map() {
                 marker = new mapboxgl.Marker()
                     .setLngLat(event.lngLat)
                     .addTo(map.current);
+                markers.push(marker);
+                console.log("marker inside", marker, markers);
             });
 
             return;
         }
-        console.log("marker should be removed", marker);
+        console.log("marker should be removed", markers);
         // console.log("noEdit");
         // marker.remove();
         // if (editMode === false) {
@@ -160,14 +164,37 @@ export default function Map() {
             boat: "#F4A261",
         };
 
+        if (visibleMode === true) {
+            geoFeatures.map((feature1) => {
+                map.current.removeLayer(JSON.stringify(feature1.id));
+                map.current.removeSource(feature1.tripname);
+                // map.current.setLayoutProperty(
+                //     JSON.stringify(feature1.id),
+                //     "visibility",
+                //     "none"
+                // );
+            });
+            return;
+        }
+
         geoFeatures.map((feature) => {
-            if (visibleMode === true) {
-                geoFeatures.map((feature1) => {
-                    map.current.removeLayer(JSON.stringify(feature1.id));
-                    map.current.removeSource(feature1.tripname);
+            if (map.current.getSource(feature.tripname)) {
+                console.log("inside");
+                map.current.addLayer({
+                    id: JSON.stringify(feature.id),
+                    type: "line",
+                    source: feature.tripname,
+                    layout: {
+                        visibility: "visible",
+                    },
+                    paint: {
+                        "line-color": colors[feature.triptype],
+                        "line-width": 4,
+                    },
                 });
                 return;
             }
+
             map.current.addSource(feature.tripname, {
                 type: "geojson",
                 data: {
@@ -198,15 +225,58 @@ export default function Map() {
         });
     }
 
+    useEffect(() => {
+        console.log("VISIBILITY", visibility, geomFeatures);
+
+        if (visibility) {
+            console.log("VISIBILITY -1", visibility);
+            // geomFeatures.map((feature) => {
+            //     map.current.getLayer(feature.id);
+            //     map.current.setLayoutProperty(
+            //         JSON.stringify(feature.id),
+            //         "visibility",
+            //         "visible"
+            //     );
+            // });
+        } else {
+            console.log("VISIBILITY - 2", visibility);
+            // geomFeatures.map((feature) => {
+            //     map.current.getLayer(feature.id);
+            //     map.current.setLayoutProperty(
+            //         JSON.stringify(feature.id),
+            //         "visibility",
+            //         "none"
+            //     );
+            // });
+        }
+    }, [visibility]);
+
+    // function changeVisibility() {
+    //     if (visibleMode === true) {
+    //         geoFeatures.map((feature1) => {
+    //             // map.current.removeLayer(JSON.stringify(feature1.id));
+    //             // map.current.removeSource(feature1.tripname);
+    //             map.current.setLayoutProperty(
+    //                 JSON.stringify(feature1.id),
+    //                 "visibility",
+    //                 "none"
+    //             );
+    //         });
+    //         return;
+    //     }
+    // }
+
     function onButtonAllRoutesClick(event) {
         const html = event.target.innerHTML;
         if (html.includes("Hide")) {
             setRoutesVisibleMode(false);
+            setVisibility(false);
             renderRoutes(geomFeatures, routesVisibleMode);
             return;
         }
 
         setRoutesVisibleMode(true);
+        setVisibility(true);
         renderRoutes(geomFeatures, routesVisibleMode);
     }
 
@@ -214,11 +284,13 @@ export default function Map() {
         const html = event.target.innerHTML;
         if (html.includes("Hide")) {
             setMyRoutesVisibleMode(false);
+            setVisibility(false);
             renderRoutes(personalGeomFeatures, myRoutesVisibleMode);
             return;
         }
 
         setMyRoutesVisibleMode(true);
+        setVisibility(true);
         renderRoutes(personalGeomFeatures, myRoutesVisibleMode);
     }
 
