@@ -12,7 +12,6 @@ export default function App() {
 
     useEffect(() => {
         axios.get("/api/user/id").then((response) => {
-            console.log("API response", response.data.user);
             return setUser(response.data.user);
         });
     }, []);
@@ -27,7 +26,6 @@ export default function App() {
             ...user,
             bio,
         });
-        console.log("Now I am changing the Bio!!!!", user, bio);
     }
     // function onModalClose() {
     //     setShowModal(false);

@@ -21,16 +21,35 @@ export default function Map() {
     const [zoom, setZoom] = useState(4);
     const [basicLayer, setBasicLayer] = useState();
     const [geomFeatures, setGeomFeatures] = useState();
+    const [personalGeomFeatures, setPersonalGeomFeatures] = useState([]);
     const [tripCoordinates, setTripCoordinates] = useState();
     const [formData, setFormData] = useState({});
+    const [editMode, setEditMode] = useState(false);
+    const [routesVisibleMode, setRoutesVisibleMode] = useState(false);
+    const [myRoutesVisibleMode, setMyRoutesVisibleMode] = useState(false);
+    const [userId, setUserId] = useState();
     const [error, setError] = useState("");
 
     useEffect(() => {
         axios.get("/api/geom").then((response) => {
-            console.log("map api/geom ", response.data);
+            console.log("map api/geom ", response.data, response);
             return setGeomFeatures(response.data);
         });
+        axios.get("/api/user/id").then((response) => {
+            console.log("map /api/user/id ", response.data.user);
+            return setUserId(response.data.user.id);
+        });
     }, []);
+
+    useEffect(() => {
+        if (userId) {
+            console.log("USERID TRUE", userId);
+            axios.get(`/api/geom/${userId}`).then((request, response) => {
+                console.log("map /api/geom/id THATS OK?????", request.data[0]);
+                return setPersonalGeomFeatures(request.data);
+            });
+        }
+    }, [userId]);
 
     useEffect(() => {
         if (map.current) return; // initialize map only once
@@ -41,11 +60,17 @@ export default function Map() {
             center: [lng, lat],
             zoom: zoom,
         });
-        map.current.on("move", () => {
-            setLng(map.current.getCenter().lng.toFixed(zoom));
-            setLat(map.current.getCenter().lat.toFixed(zoom));
-            setZoom(map.current.getZoom().toFixed(2));
-        });
+        // map.current.on("move", () => {
+        //     setLng(map.current.getCenter().lng.toFixed(zoom));
+        //     setLat(map.current.getCenter().lat.toFixed(zoom));
+        //     setZoom(map.current.getZoom().toFixed(2));
+        // });
+        // map.current.on("mousemove", function (e) {
+        //     document.getElementById("info").innerHTML =
+        //         JSON.stringify(e.point) +
+        //         "<br />" +
+        //         JSON.stringify(e.lngLat.toString());
+        // });
 
         let lngLatClicked = [];
         map.current.on("click", (event) => {
@@ -57,13 +82,6 @@ export default function Map() {
             });
             setTripCoordinates(coordPair);
         });
-
-        map.current.on("mousemove", function (e) {
-            document.getElementById("info").innerHTML =
-                JSON.stringify(e.point) +
-                "<br />" +
-                JSON.stringify(e.lngLat.toString());
-        });
     }, []);
 
     useEffect(() => {
@@ -72,6 +90,31 @@ export default function Map() {
         }
         map.current.setStyle(basicLayer);
     }, [basicLayer]);
+
+    useEffect(() => {
+        console.log("USE EFFECT EDIT MODE", editMode === true);
+        let marker;
+        if (editMode === true) {
+            console.log("marker should be added", marker);
+            map.current.on("click", (event) => {
+                console.log("click", marker);
+                marker = new mapboxgl.Marker()
+                    .setLngLat(event.lngLat)
+                    .addTo(map.current);
+            });
+
+            return;
+        }
+        console.log("marker should be removed", marker);
+        // console.log("noEdit");
+        // marker.remove();
+        // if (editMode === false) {
+        //     console.log("marker should be removed", marker.remove());
+        //     marker.remove();
+        //     return;
+        // }
+        // console.log("what happens here?", marker);
+    }, [editMode]);
 
     function onFormSubmit(event) {
         event.preventDefault();
@@ -95,6 +138,10 @@ export default function Map() {
         setFormData({ ...formData, [event.target.name]: event.target.value });
     }
 
+    function onCancelRoute() {
+        document.getElementById("inputTripName").value = " ";
+    }
+
     function onRadioClick(event) {
         let value = event.target.value;
         styles.map((style) => {
@@ -105,8 +152,8 @@ export default function Map() {
         });
     }
 
-    function onButtonLinestringClick() {
-        // MULTILINES MULTILINES MULTILINES MULTILINES MULTILINES
+    function renderRoutes(geoFeatures, visibility) {
+        console.log("renderRoutes visibility", visibility);
         const colors = {
             car: "#e76f51",
             bike: "#2A9D8F",
@@ -114,7 +161,13 @@ export default function Map() {
             boat: "#F4A261",
         };
 
-        geomFeatures.map((feature) => {
+        console.log("renderRoutes", routesVisibleMode);
+        geoFeatures.map((feature) => {
+            // let visibilityValue;
+            if (visibility === true) {
+                console.log("VISBILITY is false", routesVisibleMode);
+                map.current.removeSource(feature.tripname);
+            }
             map.current.addSource(feature.tripname, {
                 type: "geojson",
                 data: {
@@ -134,6 +187,11 @@ export default function Map() {
                 id: JSON.stringify(feature.id),
                 type: "line",
                 source: feature.tripname,
+                layout: {
+                    // Make the layer visible by default.
+                    visibility: "visible",
+                    // visibility: visibilityValue,
+                },
                 paint: {
                     "line-color": colors[feature.triptype],
                     "line-width": 4,
@@ -142,25 +200,108 @@ export default function Map() {
         });
     }
 
-    function onButtonPointClick() {
-        // POINTS POINTS POINTS
-        map.current.addSource("points", {
-            type: "geojson",
-            data: {
-                type: "FeatureCollection",
-                features: geomFeatures.POINTS,
-            },
-        });
+    function onButtonAllRoutesClick(event) {
+        // MULTILINES MULTILINES MULTILINES MULTILINES MULTILINES
+        const html = event.target.innerHTML;
+        if (html === "Hide all Routes") {
+            console.log("SHOW THE ROUTE!");
+            setRoutesVisibleMode(false);
+            return;
+        }
+        setRoutesVisibleMode(true);
 
-        map.current.addLayer({
-            id: "points",
-            type: "circle",
-            source: "points",
-            paint: {
-                "circle-radius": 5,
-                "circle-color": "rgb(185, 212, 218)",
-            },
-        });
+        if (routesVisibleMode) {
+            console.log("MODE!!!!!!!!!!!!!!!!!!is true", routesVisibleMode);
+            return;
+        }
+        renderRoutes(geomFeatures, routesVisibleMode);
+    }
+
+    function onButtonPersonalRoutesClick() {
+        const html = event.target.innerHTML;
+
+        if (html.includes("Hide")) {
+            console.log("sowRoute");
+            setMyRoutesVisibleMode(false);
+            return;
+        }
+        setMyRoutesVisibleMode(true);
+
+        if (myRoutesVisibleMode) {
+            console.log("mode is true", myRoutesVisibleMode);
+            return;
+        }
+        renderRoutes(personalGeomFeatures);
+    }
+
+    function addRouteOnClick(event) {
+        const html = event.target.innerHTML;
+
+        if (html === "Cancel") {
+            console.log("added Cancel");
+            setEditMode(false);
+            return;
+        }
+        setEditMode(true);
+    }
+
+    function renderEditOptions() {
+        return (
+            <div className="mapInteractive">
+                <button onClick={addRouteOnClick}>
+                    {editMode ? `Cancel` : `Start editing`}
+                </button>
+                <div className="FormAddRoutes">
+                    <form
+                        hidden={editMode ? false : true}
+                        method="POST"
+                        onSubmit={onFormSubmit}
+                        className="registrationForm"
+                    >
+                        <input
+                            type="text"
+                            name="name"
+                            id="inputTripName"
+                            required
+                            placeholder="Name of the trip"
+                            onChange={onChange}
+                        ></input>
+                        <select
+                            id="tripType"
+                            name="tripType"
+                            required
+                            onChange={onChange}
+                        >
+                            <option disabled selected value>
+                                Select the type of trip
+                            </option>
+                            <option value="car">Car</option>
+                            <option value="bike">Bike</option>
+                            <option value="walk">Foot</option>
+                            <option value="boat">Boat</option>
+                        </select>
+                        <button type="submit">Save Route</button>
+                        <button onClick={onCancelRoute}>Cancel</button>
+                    </form>
+                </div>
+
+                {/* <div className="latLonZoom">
+                    Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+                </div> */}
+
+                <div className="routeButtonsDiv">
+                    <button onClick={onButtonAllRoutesClick}>
+                        {routesVisibleMode ? "Hide" : "Show"} all Routes
+                    </button>
+                    <button onClick={onButtonPersonalRoutesClick}>
+                        {myRoutesVisibleMode ? "Hide" : "Show "} my Routes
+                    </button>
+                </div>
+                <div>
+                    <p id="info"></p>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -241,52 +382,8 @@ export default function Map() {
                     </p>
                 </div>
             </div>
-            <div className="FormAddRoutes">
-                <form
-                    method="POST"
-                    onSubmit={onFormSubmit}
-                    className="registrationForm"
-                >
-                    <input
-                        type="text"
-                        name="name"
-                        required
-                        placeholder="Name of the trip"
-                        onChange={onChange}
-                    ></input>
-                    <select
-                        id="tripType"
-                        name="tripType"
-                        required
-                        onChange={onChange}
-                    >
-                        <option disabled selected value>
-                            Select the type of trip
-                        </option>
-                        <option value="car">Car</option>
-                        <option value="bike">Bike</option>
-                        <option value="walk">Foot</option>
-                        <option value="boat">Boat</option>
-                    </select>
-                    <button type="submit">Save Route</button>
-                </form>
-            </div>
 
-            <div className="mapInteractive">
-                <div className="latLonZoom">
-                    Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-                </div>
-
-                <div className="routeButtonsDiv">
-                    <button onClick={onButtonLinestringClick}>
-                        Linestring
-                    </button>
-                    <button onClick={onButtonPointClick}>Points</button>
-                </div>
-                <div>
-                    <p id="info"></p>
-                </div>
-            </div>
+            {userId ? renderEditOptions() : <p></p>}
         </div>
     );
 }

@@ -81,6 +81,12 @@ a:hover {
     height: auto;
 }
 
+.welcome p {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .profileDiv {
     display: grid;
     grid-template-columns: 2fr 2fr;
@@ -194,22 +200,30 @@ footer {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
 
     /*align-content: center;
     justify-items: center;
     align-items: center; */
 }
 
-.latLonZoom {
-    font-size: 14px;
+.FormAddRoutes {
+    display: flex;
+    justify-content: center;
+    max-height: 50px;
+    margin: 20px;
+}
+
+.routeButtonsDiv {
     max-height: 50px;
     max-width: 400px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
-.routeButtonsDiv {
+.latLonZoom {
+    font-size: 14px;
     max-height: 50px;
     max-width: 400px;
     display: flex;
@@ -255,11 +269,4 @@ footer {
 }
 .mapboxgl-ctrl-bottom-left {
     top: 5px;
-}
-
-.FormAddRoutes {
-    display: flex;
-    justify-content: center;
-    max-height: 50px;
-    margin: 20px;
 }

@@ -25,7 +25,6 @@ export default function Profile({
             <section className="profileInfo">
                 <h1>
                     {firstName} {lastName}
-                    {userId}
                 </h1>
                 {/* <p className="travelExperienceP">{bio}</p> */}
                 <ExperienceEditor

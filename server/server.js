@@ -25,6 +25,7 @@ const {
     getTrips,
     insertBio,
     getAllUsers,
+    getTripsById,
 } = require("./db");
 const { login } = require("./login");
 
@@ -85,6 +86,20 @@ app.get("/api/geom", (request, response) => {
     });
 });
 
+app.get("/api/geom/:id", (request, response) => {
+    const userId = request.params.id;
+    console.log("request.params.id", request.params.id);
+    getTripsById(userId)
+        .then((result) => {
+            console.log("server.js getTrips", result);
+            response.json(result);
+        })
+        .catch((error) => {
+            console.log("getTripsById", error);
+            response.json(error);
+        });
+});
+
 app.post("/api/geom", (request, response) => {
     const userId = request.session.user.id;
     const { tripName, tripType, coordinates } = request.body;
@@ -95,7 +110,8 @@ app.post("/api/geom", (request, response) => {
             response.json(result);
         })
         .catch((error) => {
-            console.log(error);
+            console.log("createTrip", error);
+            response.json(error);
         });
 });
 

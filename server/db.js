@@ -103,6 +103,15 @@ function getTrips() {
     });
 }
 
+function getTripsById(userId) {
+    return db
+        .query(`SELECT * FROM trips WHERE userId=$1`, [userId])
+        .then((result) => {
+            console.log("db.js getTrips", result.rows);
+            return result.rows;
+        });
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
@@ -110,4 +119,5 @@ module.exports = {
     createTrip,
     getTrips,
     getAllUsers,
+    getTripsById,
 };
