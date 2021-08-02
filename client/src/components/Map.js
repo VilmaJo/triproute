@@ -152,8 +152,7 @@ export default function Map() {
         });
     }
 
-    function renderRoutes(geoFeatures, visibility) {
-        console.log("renderRoutes visibility", visibility);
+    function renderRoutes(geoFeatures, visibleMode) {
         const colors = {
             car: "#e76f51",
             bike: "#2A9D8F",
@@ -161,12 +160,13 @@ export default function Map() {
             boat: "#F4A261",
         };
 
-        console.log("renderRoutes", routesVisibleMode);
         geoFeatures.map((feature) => {
-            // let visibilityValue;
-            if (visibility === true) {
-                console.log("VISBILITY is false", routesVisibleMode);
-                map.current.removeSource(feature.tripname);
+            if (visibleMode === true) {
+                geoFeatures.map((feature1) => {
+                    map.current.removeLayer(JSON.stringify(feature1.id));
+                    map.current.removeSource(feature1.tripname);
+                });
+                return;
             }
             map.current.addSource(feature.tripname, {
                 type: "geojson",
@@ -188,9 +188,7 @@ export default function Map() {
                 type: "line",
                 source: feature.tripname,
                 layout: {
-                    // Make the layer visible by default.
                     visibility: "visible",
-                    // visibility: visibilityValue,
                 },
                 paint: {
                     "line-color": colors[feature.triptype],
@@ -201,37 +199,27 @@ export default function Map() {
     }
 
     function onButtonAllRoutesClick(event) {
-        // MULTILINES MULTILINES MULTILINES MULTILINES MULTILINES
         const html = event.target.innerHTML;
-        if (html === "Hide all Routes") {
-            console.log("SHOW THE ROUTE!");
+        if (html.includes("Hide")) {
             setRoutesVisibleMode(false);
+            renderRoutes(geomFeatures, routesVisibleMode);
             return;
         }
-        setRoutesVisibleMode(true);
 
-        if (routesVisibleMode) {
-            console.log("MODE!!!!!!!!!!!!!!!!!!is true", routesVisibleMode);
-            return;
-        }
+        setRoutesVisibleMode(true);
         renderRoutes(geomFeatures, routesVisibleMode);
     }
 
-    function onButtonPersonalRoutesClick() {
+    function onButtonPersonalRoutesClick(event) {
         const html = event.target.innerHTML;
-
         if (html.includes("Hide")) {
-            console.log("sowRoute");
             setMyRoutesVisibleMode(false);
+            renderRoutes(personalGeomFeatures, myRoutesVisibleMode);
             return;
         }
-        setMyRoutesVisibleMode(true);
 
-        if (myRoutesVisibleMode) {
-            console.log("mode is true", myRoutesVisibleMode);
-            return;
-        }
-        renderRoutes(personalGeomFeatures);
+        setMyRoutesVisibleMode(true);
+        renderRoutes(personalGeomFeatures, myRoutesVisibleMode);
     }
 
     function addRouteOnClick(event) {
@@ -248,41 +236,43 @@ export default function Map() {
     function renderEditOptions() {
         return (
             <div className="mapInteractive">
-                <button onClick={addRouteOnClick}>
-                    {editMode ? `Cancel` : `Start editing`}
-                </button>
-                <div className="FormAddRoutes">
-                    <form
-                        hidden={editMode ? false : true}
-                        method="POST"
-                        onSubmit={onFormSubmit}
-                        className="registrationForm"
-                    >
-                        <input
-                            type="text"
-                            name="name"
-                            id="inputTripName"
-                            required
-                            placeholder="Name of the trip"
-                            onChange={onChange}
-                        ></input>
-                        <select
-                            id="tripType"
-                            name="tripType"
-                            required
-                            onChange={onChange}
+                <div className="addRoutes">
+                    <button onClick={addRouteOnClick}>
+                        {editMode ? `Cancel` : `Start editing`}
+                    </button>
+                    <div className="FormAddRoutes">
+                        <form
+                            hidden={editMode ? false : true}
+                            method="POST"
+                            onSubmit={onFormSubmit}
+                            className="registrationForm"
                         >
-                            <option disabled selected value>
-                                Select the type of trip
-                            </option>
-                            <option value="car">Car</option>
-                            <option value="bike">Bike</option>
-                            <option value="walk">Foot</option>
-                            <option value="boat">Boat</option>
-                        </select>
-                        <button type="submit">Save Route</button>
-                        <button onClick={onCancelRoute}>Cancel</button>
-                    </form>
+                            <input
+                                type="text"
+                                name="name"
+                                id="inputTripName"
+                                required
+                                placeholder="Name of the trip"
+                                onChange={onChange}
+                            ></input>
+                            <select
+                                id="tripType"
+                                name="tripType"
+                                required
+                                onChange={onChange}
+                            >
+                                <option disabled selected value>
+                                    Select the type of trip
+                                </option>
+                                <option value="car">Car</option>
+                                <option value="bike">Bike</option>
+                                <option value="walk">Foot</option>
+                                <option value="boat">Boat</option>
+                            </select>
+                            <button type="submit">Save Route</button>
+                            <button onClick={onCancelRoute}>Cancel</button>
+                        </form>
+                    </div>
                 </div>
 
                 {/* <div className="latLonZoom">
@@ -383,7 +373,20 @@ export default function Map() {
                 </div>
             </div>
 
-            {userId ? renderEditOptions() : <p></p>}
+            {userId ? (
+                renderEditOptions()
+            ) : (
+                <div className="mapInteractive">
+                    <div className="addRoutes">
+                        <p></p>
+                    </div>
+                    <div className="routeButtonsDiv">
+                        <button onClick={onButtonAllRoutesClick}>
+                            {routesVisibleMode ? "Hide" : "Show"} all Routes
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
