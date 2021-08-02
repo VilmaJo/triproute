@@ -20,7 +20,7 @@ export default function Map() {
     const [lat, setLat] = useState(50.35);
     const [zoom, setZoom] = useState(4);
     const [basicLayer, setBasicLayer] = useState();
-    const [geomFeatures, setGeomFeatures] = useState();
+    const [geomFeatures, setGeomFeatures] = useState([]);
     const [personalGeomFeatures, setPersonalGeomFeatures] = useState([]);
     const [tripCoordinates, setTripCoordinates] = useState();
     const [formData, setFormData] = useState({});
@@ -30,15 +30,16 @@ export default function Map() {
     const [myRoutesVisibleMode, setMyRoutesVisibleMode] = useState(false);
     const [userId, setUserId] = useState();
     const [error, setError] = useState("");
+    const [ready, setReady] = useState(false);
 
     useEffect(() => {
         axios.get("/api/geom").then((response) => {
             console.log("map api/geom ", response.data, response);
-            return setGeomFeatures(response.data);
+            setGeomFeatures(response.data);
         });
         axios.get("/api/user/id").then((response) => {
             console.log("map /api/user/id ", response.data.user);
-            return setUserId(response.data.user.id);
+            setUserId(response.data.user.id);
         });
     }, []);
 
@@ -51,6 +52,19 @@ export default function Map() {
             });
         }
     }, [userId]);
+    useEffect(() => {
+        if (ready && geomFeatures) {
+            console.log("renderRoutes");
+            renderRoutes(geomFeatures);
+        }
+    }, [geomFeatures, ready]);
+
+    // useEffect(() => {
+    //     console.log("personalGeomFeatures", personalGeomFeatures);
+    //     if (ready && personalGeomFeatures) {
+    //         renderRoutes(personalGeomFeatures);
+    //     }
+    // }, [personalGeomFeatures, ready]);
 
     useEffect(() => {
         if (map.current) return; // initialize map only once
@@ -61,6 +75,7 @@ export default function Map() {
             center: [lng, lat],
             zoom: zoom,
         });
+        map.current.on("load", () => setReady(true));
         // map.current.on("move", () => {
         //     setLng(map.current.getCenter().lng.toFixed(zoom));
         //     setLat(map.current.getCenter().lat.toFixed(zoom));
@@ -156,45 +171,16 @@ export default function Map() {
         });
     }
 
-    function renderRoutes(geoFeatures, visibleMode) {
+    function renderRoutes(features) {
         const colors = {
             car: "#e76f51",
             bike: "#2A9D8F",
             walk: "#E9C46A",
             boat: "#F4A261",
         };
-
-        if (visibleMode === true) {
-            geoFeatures.map((feature1) => {
-                map.current.removeLayer(JSON.stringify(feature1.id));
-                map.current.removeSource(feature1.tripname);
-                // map.current.setLayoutProperty(
-                //     JSON.stringify(feature1.id),
-                //     "visibility",
-                //     "none"
-                // );
-            });
-            return;
-        }
-
-        geoFeatures.map((feature) => {
-            if (map.current.getSource(feature.tripname)) {
-                console.log("inside");
-                map.current.addLayer({
-                    id: JSON.stringify(feature.id),
-                    type: "line",
-                    source: feature.tripname,
-                    layout: {
-                        visibility: "visible",
-                    },
-                    paint: {
-                        "line-color": colors[feature.triptype],
-                        "line-width": 4,
-                    },
-                });
-                return;
-            }
-
+        console.log("geoFeatures", features);
+        features.map((feature) => {
+            console.log("feature.tripname", feature);
             map.current.addSource(feature.tripname, {
                 type: "geojson",
                 data: {
@@ -211,11 +197,11 @@ export default function Map() {
                 },
             });
             map.current.addLayer({
-                id: JSON.stringify(feature.id),
+                id: feature.tripname,
                 type: "line",
                 source: feature.tripname,
                 layout: {
-                    visibility: "visible",
+                    visibility: "none",
                 },
                 paint: {
                     "line-color": colors[feature.triptype],
@@ -226,30 +212,49 @@ export default function Map() {
     }
 
     useEffect(() => {
-        console.log("VISIBILITY", visibility, geomFeatures);
-
-        if (visibility) {
-            console.log("VISIBILITY -1", visibility);
-            // geomFeatures.map((feature) => {
-            //     map.current.getLayer(feature.id);
-            //     map.current.setLayoutProperty(
-            //         JSON.stringify(feature.id),
-            //         "visibility",
-            //         "visible"
-            //     );
-            // });
-        } else {
-            console.log("VISIBILITY - 2", visibility);
-            // geomFeatures.map((feature) => {
-            //     map.current.getLayer(feature.id);
-            //     map.current.setLayoutProperty(
-            //         JSON.stringify(feature.id),
-            //         "visibility",
-            //         "none"
-            //     );
-            // });
+        if (!geomFeatures.length || !ready) {
+            return;
         }
-    }, [visibility]);
+        if (routesVisibleMode) {
+            console.log("VISIBILITY -1", routesVisibleMode);
+            geomFeatures.map((feature) => {
+                map.current.getLayer(feature.id);
+                map.current.setLayoutProperty(
+                    feature.tripname,
+                    "visibility",
+                    "visible"
+                );
+            });
+        } else {
+            console.log("VISIBILITY - 2", routesVisibleMode);
+            geomFeatures.map((feature) => {
+                map.current.getLayer(feature.id);
+                map.current.setLayoutProperty(
+                    feature.tripname,
+                    "visibility",
+                    "none"
+                );
+            });
+        }
+    }, [routesVisibleMode, geomFeatures, ready]);
+
+    useEffect(() => {
+        if (!geomFeatures.length || !ready || !userId) {
+            return;
+        }
+
+        const features = geomFeatures.filter((x) => x.userid == userId);
+        console.log("features", features, userId);
+        features.map((feature) => {
+            map.current.getLayer(feature.id);
+            map.current.setLayoutProperty(
+                feature.tripname,
+
+                "visibility",
+                myRoutesVisibleMode ? "visible" : "none"
+            );
+        });
+    }, [myRoutesVisibleMode, geomFeatures, ready, userId]);
 
     // function changeVisibility() {
     //     if (visibleMode === true) {
@@ -266,32 +271,22 @@ export default function Map() {
     //     }
     // }
 
-    function onButtonAllRoutesClick(event) {
-        const html = event.target.innerHTML;
-        if (html.includes("Hide")) {
+    function onButtonAllRoutesClick() {
+        if (routesVisibleMode) {
             setRoutesVisibleMode(false);
-            setVisibility(false);
-            renderRoutes(geomFeatures, routesVisibleMode);
             return;
         }
-
         setRoutesVisibleMode(true);
-        setVisibility(true);
-        renderRoutes(geomFeatures, routesVisibleMode);
     }
 
     function onButtonPersonalRoutesClick(event) {
         const html = event.target.innerHTML;
         if (html.includes("Hide")) {
             setMyRoutesVisibleMode(false);
-            setVisibility(false);
-            renderRoutes(personalGeomFeatures, myRoutesVisibleMode);
             return;
         }
 
         setMyRoutesVisibleMode(true);
-        setVisibility(true);
-        renderRoutes(personalGeomFeatures, myRoutesVisibleMode);
     }
 
     function addRouteOnClick(event) {
