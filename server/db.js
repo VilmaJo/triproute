@@ -22,15 +22,6 @@ function createUser({
     password,
 }) {
     return hashPassword(password).then((password_hash) => {
-        console.log(
-            "db.js",
-            firstName,
-            lastName,
-            profile_url,
-            bio,
-            email,
-            password_hash
-        );
         return db
             .query(
                 `INSERT INTO users (first_name, last_name,  profile_url, bio, email, password_hash) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
@@ -44,7 +35,6 @@ function createUser({
                 ]
             )
             .then((result) => {
-                console.log("db.js createUsers", result.rows[0]);
                 return result.rows[0];
             });
     });
@@ -52,7 +42,6 @@ function createUser({
 
 function getAllUsers() {
     return db.query(`SELECT * FROM users ORDER BY id`).then((result) => {
-        console.log("getAllUsers", result.rows);
         return result.rows;
     });
 }
@@ -88,17 +77,15 @@ function createTrip(userId, tripName, tripType, coordinates) {
             [userId, tripName, tripType, coordinates]
         )
         .then((results) => {
-            console.log("db.js geometry", results.rows[0]);
             return results.rows[0];
         })
         .catch((error) => {
-            console.log(error);
+            console.log("createTrip error", error);
         });
 }
 
 function getTrips() {
     return db.query(`SELECT * FROM trips`).then((result) => {
-        console.log("db.js getTrips", result.rows[0]);
         return result.rows;
     });
 }
@@ -107,7 +94,6 @@ function getTripsById(userId) {
     return db
         .query(`SELECT * FROM trips WHERE userId=$1`, [userId])
         .then((result) => {
-            console.log("db.js getTrips", result.rows);
             return result.rows;
         });
 }

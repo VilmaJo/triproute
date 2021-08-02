@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import axios from "../axios";
 
 export default function ExperienceEditor({ bio, onBioChange, userId }) {
-    console.log("ExperienceEditor", userId == undefined);
     const [editMode, setEditMode] = useState(false);
     const [draftText, setDraftText] = useState("");
 

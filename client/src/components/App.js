@@ -41,7 +41,7 @@ export default function App() {
     return (
         <BrowserRouter>
             <header className="appHeader">
-                <Link to="/"> Home </Link>
+                {/* <Link to="/"> Home </Link> */}
                 <Link to="/profile"> Profile </Link>
                 <Link to="/map"> Map </Link>
                 <Link to="/users"> User </Link>

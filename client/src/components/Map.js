@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
 import mapboxgl from "mapbox-gl";
-
-// mapbox-styles
 import "mapbox-gl/dist/mapbox-gl.css";
-
 import axios from "../axios";
 
 const token = require("./mapbox.json");
@@ -13,7 +9,6 @@ const mapBoxToken = token.token;
 mapboxgl.accessToken = mapBoxToken;
 
 export default function Map() {
-    // const dispatch = useDispatch();
     const mapContainer = useRef(null);
     const map = useRef(null);
     const [lng, setLng] = useState(9.0);
@@ -21,11 +16,9 @@ export default function Map() {
     const [zoom, setZoom] = useState(4);
     const [basicLayer, setBasicLayer] = useState();
     const [geomFeatures, setGeomFeatures] = useState([]);
-    const [personalGeomFeatures, setPersonalGeomFeatures] = useState([]);
     const [tripCoordinates, setTripCoordinates] = useState();
     const [formData, setFormData] = useState({});
     const [editMode, setEditMode] = useState(false);
-    const [visibility, setVisibility] = useState();
     const [routesVisibleMode, setRoutesVisibleMode] = useState(false);
     const [myRoutesVisibleMode, setMyRoutesVisibleMode] = useState(false);
     const [userId, setUserId] = useState();
@@ -34,40 +27,21 @@ export default function Map() {
 
     useEffect(() => {
         axios.get("/api/geom").then((response) => {
-            console.log("map api/geom ", response.data, response);
             setGeomFeatures(response.data);
         });
         axios.get("/api/user/id").then((response) => {
-            console.log("map /api/user/id ", response.data.user);
             setUserId(response.data.user.id);
         });
     }, []);
 
     useEffect(() => {
-        if (userId) {
-            console.log("USERID TRUE", userId);
-            axios.get(`/api/geom/${userId}`).then((request, response) => {
-                console.log("map /api/geom/id THATS OK?????", request.data[0]);
-                return setPersonalGeomFeatures(request.data);
-            });
-        }
-    }, [userId]);
-    useEffect(() => {
         if (ready && geomFeatures) {
-            console.log("renderRoutes");
             renderRoutes(geomFeatures);
         }
     }, [geomFeatures, ready]);
 
-    // useEffect(() => {
-    //     console.log("personalGeomFeatures", personalGeomFeatures);
-    //     if (ready && personalGeomFeatures) {
-    //         renderRoutes(personalGeomFeatures);
-    //     }
-    // }, [personalGeomFeatures, ready]);
-
     useEffect(() => {
-        if (map.current) return; // initialize map only once
+        if (map.current) return;
 
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
@@ -76,21 +50,9 @@ export default function Map() {
             zoom: zoom,
         });
         map.current.on("load", () => setReady(true));
-        // map.current.on("move", () => {
-        //     setLng(map.current.getCenter().lng.toFixed(zoom));
-        //     setLat(map.current.getCenter().lat.toFixed(zoom));
-        //     setZoom(map.current.getZoom().toFixed(2));
-        // });
-        // map.current.on("mousemove", function (e) {
-        //     document.getElementById("info").innerHTML =
-        //         JSON.stringify(e.point) +
-        //         "<br />" +
-        //         JSON.stringify(e.lngLat.toString());
-        // });
 
         let lngLatClicked = [];
         map.current.on("click", (event) => {
-            console.log("mapClick", event.lngLat);
             lngLatClicked.push(event.lngLat);
             let coordPair = [];
             lngLatClicked.map((array) => {
@@ -108,31 +70,17 @@ export default function Map() {
     }, [basicLayer]);
 
     useEffect(() => {
-        console.log("USE EFFECT EDIT MODE", editMode === true);
         let marker;
         let markers = [];
         if (editMode === true) {
-            console.log("marker should be added", marker);
             map.current.on("click", (event) => {
-                console.log("click", marker);
                 marker = new mapboxgl.Marker()
                     .setLngLat(event.lngLat)
                     .addTo(map.current);
                 markers.push(marker);
-                console.log("marker inside", marker, markers);
             });
-
             return;
         }
-        console.log("marker should be removed", markers);
-        // console.log("noEdit");
-        // marker.remove();
-        // if (editMode === false) {
-        //     console.log("marker should be removed", marker.remove());
-        //     marker.remove();
-        //     return;
-        // }
-        // console.log("what happens here?", marker);
     }, [editMode]);
 
     function onFormSubmit(event) {
@@ -144,7 +92,6 @@ export default function Map() {
         axios
             .post("/api/geom", { tripName, tripType, coordinates })
             .then(() => {
-                console.log("It has been saved");
                 window.location.replace("/map");
             })
             .catch((error) => {
@@ -178,10 +125,9 @@ export default function Map() {
             walk: "#E9C46A",
             boat: "#F4A261",
         };
-        console.log("geoFeatures", features);
+
         features.map((feature) => {
-            console.log("feature.tripname", feature);
-            map.current.addSource(feature.tripname, {
+            map.current.addSource(JSON.stringify(feature.id), {
                 type: "geojson",
                 data: {
                     type: "Feature",
@@ -197,9 +143,9 @@ export default function Map() {
                 },
             });
             map.current.addLayer({
-                id: feature.tripname,
+                id: JSON.stringify(feature.id),
                 type: "line",
-                source: feature.tripname,
+                source: JSON.stringify(feature.id),
                 layout: {
                     visibility: "none",
                 },
@@ -215,61 +161,30 @@ export default function Map() {
         if (!geomFeatures.length || !ready) {
             return;
         }
-        if (routesVisibleMode) {
-            console.log("VISIBILITY -1", routesVisibleMode);
-            geomFeatures.map((feature) => {
-                map.current.getLayer(feature.id);
-                map.current.setLayoutProperty(
-                    feature.tripname,
-                    "visibility",
-                    "visible"
-                );
-            });
-        } else {
-            console.log("VISIBILITY - 2", routesVisibleMode);
-            geomFeatures.map((feature) => {
-                map.current.getLayer(feature.id);
-                map.current.setLayoutProperty(
-                    feature.tripname,
-                    "visibility",
-                    "none"
-                );
-            });
-        }
+        geomFeatures.map((feature) => {
+            map.current.getLayer(JSON.stringify(feature.id));
+            map.current.setLayoutProperty(
+                JSON.stringify(feature.id),
+                "visibility",
+                routesVisibleMode ? "visible" : "none"
+            );
+        });
     }, [routesVisibleMode, geomFeatures, ready]);
 
     useEffect(() => {
         if (!geomFeatures.length || !ready || !userId) {
             return;
         }
-
         const features = geomFeatures.filter((x) => x.userid == userId);
-        console.log("features", features, userId);
         features.map((feature) => {
-            map.current.getLayer(feature.id);
+            map.current.getLayer(JSON.stringify(feature.id));
             map.current.setLayoutProperty(
-                feature.tripname,
-
+                JSON.stringify(feature.id),
                 "visibility",
                 myRoutesVisibleMode ? "visible" : "none"
             );
         });
     }, [myRoutesVisibleMode, geomFeatures, ready, userId]);
-
-    // function changeVisibility() {
-    //     if (visibleMode === true) {
-    //         geoFeatures.map((feature1) => {
-    //             // map.current.removeLayer(JSON.stringify(feature1.id));
-    //             // map.current.removeSource(feature1.tripname);
-    //             map.current.setLayoutProperty(
-    //                 JSON.stringify(feature1.id),
-    //                 "visibility",
-    //                 "none"
-    //             );
-    //         });
-    //         return;
-    //     }
-    // }
 
     function onButtonAllRoutesClick() {
         if (routesVisibleMode) {
@@ -279,21 +194,16 @@ export default function Map() {
         setRoutesVisibleMode(true);
     }
 
-    function onButtonPersonalRoutesClick(event) {
-        const html = event.target.innerHTML;
-        if (html.includes("Hide")) {
+    function onButtonPersonalRoutesClick() {
+        if (myRoutesVisibleMode) {
             setMyRoutesVisibleMode(false);
             return;
         }
-
         setMyRoutesVisibleMode(true);
     }
 
-    function addRouteOnClick(event) {
-        const html = event.target.innerHTML;
-
-        if (html === "Cancel") {
-            console.log("added Cancel");
+    function addRouteOnClick() {
+        if (editMode) {
             setEditMode(false);
             return;
         }
@@ -342,10 +252,6 @@ export default function Map() {
                     </div>
                 </div>
 
-                {/* <div className="latLonZoom">
-                    Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-                </div> */}
-
                 <div className="routeButtonsDiv">
                     <button onClick={onButtonAllRoutesClick}>
                         {routesVisibleMode ? "Hide" : "Show"} all Routes
@@ -353,9 +259,6 @@ export default function Map() {
                     <button onClick={onButtonPersonalRoutesClick}>
                         {myRoutesVisibleMode ? "Hide" : "Show "} my Routes
                     </button>
-                </div>
-                <div>
-                    <p id="info"></p>
                 </div>
             </div>
         );

@@ -2,13 +2,6 @@
     box-sizing: border-box;
 }
 
-/* main {
-    max-height: 100vh;
-    width: 70%;
-    margin: auto;
-    text-align: center;
-    padding: 0 20px;
-} */
 body {
     font-family: "Lucida Console", "Courier New", monospace;
     font-size: 12pt;
@@ -16,7 +9,6 @@ body {
     color: rgb(74, 74, 74);
 }
 .appHeader {
-    /* border: 10px solid rgb(154, 189, 154); */
     border-bottom: 1px solid rgb(74, 74, 74);
     max-height: 100px;
     max-width: 800px;
@@ -194,22 +186,8 @@ footer {
 }
 
 .mapInteractive {
-    /* max-width: 800px;
-    max-height: 100px;
-    margin: 10px auto;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: center; */
-
-    /*align-content: center;
-    justify-items: center;
-    align-items: center; */
-
     display: grid;
     grid-template-columns: 3fr 1fr;
-}
-.addRoutes {
 }
 
 .FormAddRoutes {
@@ -217,6 +195,19 @@ footer {
     justify-content: center;
     max-height: 50px;
     margin: 20px;
+}
+
+.FormAddRoutes input,
+.FormAddRoutes select {
+    margin: 5px;
+    padding: 5px;
+    border: 2px solid rgb(74, 74, 74, 0.7);
+    height: 40px;
+    min-width: 80px;
+}
+
+.FormAddRoutes input:focus {
+    outline: 2px solid rgb(74, 74, 74);
 }
 
 .routeButtonsDiv {

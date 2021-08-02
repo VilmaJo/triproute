@@ -63,39 +63,32 @@ app.get("/api/user/id", (request, response) => {
 app.post("/api/user/id", (request, response) => {
     const userId = request.session.user.id;
     const { bio } = request.body;
-    console.log("request-body", request.body);
     insertBio(bio, userId).then((result) => {
-        console.log("insertBio result", result);
         const updatedUser = result;
-        console.log("updatedUser", updatedUser);
         response.json({ user: updatedUser });
     });
 });
 
 app.get("/api/users", (request, response) => {
     getAllUsers().then((result) => {
-        console.log("server.js users", result);
         response.json(result);
     });
 });
 
 app.get("/api/geom", (request, response) => {
     getTrips().then((result) => {
-        console.log("server.js getTrips", result);
         response.json(result);
     });
 });
 
 app.get("/api/geom/:id", (request, response) => {
     const userId = request.params.id;
-    console.log("request.params.id", request.params.id);
     getTripsById(userId)
         .then((result) => {
-            console.log("server.js getTrips", result);
             response.json(result);
         })
         .catch((error) => {
-            console.log("getTripsById", error);
+            console.log("getTripsById Errr", error);
             response.json(error);
         });
 });
@@ -143,12 +136,9 @@ app.post("/api/logout", (request, response) => {
 app.post("/api/registration", (request, response) => {
     const profile_url = "../assets/defaultImage.jpg";
     const { firstName, lastName, email, password } = request.body;
-    console.log("server request.body", request.body);
-    console.log("server request.session", request.session);
 
     createUser({ firstName, lastName, profile_url, email, password })
         .then((user) => {
-            console.log("server, user", user);
             request.session.user = user;
             response.json(user);
         })
@@ -160,7 +150,6 @@ app.post("/api/registration", (request, response) => {
 });
 
 app.get("*", function (request, response) {
-    console.log("server.js RESPONSE !");
     response.sendFile(path.join(__dirname, "..", "client", "index.html"));
 });
 
